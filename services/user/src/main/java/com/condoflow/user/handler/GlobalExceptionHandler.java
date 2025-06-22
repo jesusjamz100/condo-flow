@@ -1,5 +1,6 @@
 package com.condoflow.user.handler;
 
+import com.condoflow.user.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -10,8 +11,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.*;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException exp) {
+        return ResponseEntity
+                .status(NOT_FOUND)
+                .body(exp.getMsg());
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exp) {
@@ -24,14 +34,14 @@ public class GlobalExceptionHandler {
                 });
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(BAD_REQUEST)
                 .body(new ErrorResponse(errors));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception exp) {
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(INTERNAL_SERVER_ERROR)
                 .body("Internal error, contact the admin");
     }
 }
