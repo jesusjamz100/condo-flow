@@ -56,7 +56,7 @@ docker-compose up
 | ------------- | ------------- |
 | Config Server | http://localhost:8888 |
 | Eureka Dashboard | http://localhost:8761 |
-| Gateway | http://localhost:8080 |
+| Gateway | http://localhost:8222 |
 
 ---
 

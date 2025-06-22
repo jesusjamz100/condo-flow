@@ -1,0 +1,23 @@
+eureka:
+  instance:
+    hostname: discovery-service
+  client:
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka
+
+name:
+  value: condoflow
+
+spring:
+  cloud:
+    config:
+      override-system-properties: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
