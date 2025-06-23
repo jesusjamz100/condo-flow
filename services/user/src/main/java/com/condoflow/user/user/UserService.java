@@ -1,6 +1,8 @@
 package com.condoflow.user.user;
 
 import com.condoflow.user.common.PageResponse;
+import com.condoflow.user.exception.DocumentAlreadyUsedException;
+import com.condoflow.user.exception.EmailAlreadyUsedException;
 import com.condoflow.user.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -48,11 +50,31 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    public UserResponse findById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID:: " + userId));
+        return userMapper.toUserResponse(user);
+    }
+
     private Long extractUserId(Jwt jwt) {
         Object claim = jwt.getClaim("user_id");
         if (claim instanceof Number) {
             return ((Number) claim).longValue();
         }
         return Long.valueOf(claim.toString());
+    }
+
+    public Long createUser(UserRequest request) {
+
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new EmailAlreadyUsedException("User email is already in use");
+        }
+        if (userRepository.findByDocument(request.document().toUpperCase()).isPresent()) {
+            throw new DocumentAlreadyUsedException("User document is already in use");
+        }
+
+        User newUser = userMapper.toUser(request);
+
+        return userRepository.save(newUser).getId();
     }
 }

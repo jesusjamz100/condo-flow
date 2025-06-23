@@ -1,5 +1,7 @@
 package com.condoflow.user.handler;
 
+import com.condoflow.user.exception.DocumentAlreadyUsedException;
+import com.condoflow.user.exception.EmailAlreadyUsedException;
 import com.condoflow.user.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +18,22 @@ import static org.springframework.http.HttpStatus.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(DocumentAlreadyUsedException.class)
+    public ResponseEntity<String> handler(DocumentAlreadyUsedException exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(exp.getMsg());
+    }
+
+    @ExceptionHandler(EmailAlreadyUsedException.class)
+    public ResponseEntity<String> handler(EmailAlreadyUsedException exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(exp.getMsg());
+    }
+
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException exp) {
+    public ResponseEntity<String> handler(UserNotFoundException exp) {
         return ResponseEntity
                 .status(NOT_FOUND)
                 .body(exp.getMsg());
