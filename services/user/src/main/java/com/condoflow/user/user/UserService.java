@@ -71,6 +71,16 @@ public class UserService {
         return userRepository.save(newUser).getId();
     }
 
+    public void makeAdmin(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID:: " + userId));
+        if (user.getRole().equals(Role.ADMIN)) {
+            throw new RuntimeException("User is already an ADMIN");
+        }
+        user.setRole(Role.ADMIN);
+        userRepository.save(user);
+    }
+
     public void updateUser(Long userId, UserRequest request) {
         User user = userRepository.findById(request.id())
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID:: " + request.id()));

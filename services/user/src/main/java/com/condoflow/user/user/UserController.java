@@ -9,8 +9,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -45,6 +43,15 @@ public class UserController {
         return ResponseEntity.ok(service.createUser(request));
     }
 
+    @PreAuthorize("@auth.isAdmin(principal)")
+    @PatchMapping("/makeAdmin/{user-id}")
+    public ResponseEntity<Void> makeAdmin(
+            @PathVariable("user-id") Long userId
+    ) {
+        service.makeAdmin(userId);
+        return ResponseEntity.accepted().build();
+    }
+
     @PreAuthorize("@auth.isAdminOrOwner(#userId, principal)")
     @PutMapping("/update/{user-id}")
     public ResponseEntity<Void> updateUser(
@@ -55,7 +62,7 @@ public class UserController {
         return ResponseEntity.accepted().build();
     }
 
-    @PreAuthorize("@auth.isAdmin(#userId, principal)")
+    @PreAuthorize("@auth.isAdmin(principal)")
     @DeleteMapping("/delete/{user-id}")
     public ResponseEntity<Void> deleteById(
             @PathVariable("user-id") Long userId
