@@ -4,6 +4,7 @@ import com.condoflow.user.common.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -42,5 +43,24 @@ public class UserController {
             @RequestBody @Valid UserRequest request
     ) {
         return ResponseEntity.ok(service.createUser(request));
+    }
+
+    @PreAuthorize("@auth.isAdminOrOwner(#userId, principal)")
+    @PutMapping("/update/{user-id}")
+    public ResponseEntity<Void> updateUser(
+            @PathVariable("user-id") Long userId,
+            @RequestBody @Valid UserRequest request
+    ) {
+        service.updateUser(userId, request);
+        return ResponseEntity.accepted().build();
+    }
+
+    @PreAuthorize("@auth.isAdmin(#userId, principal)")
+    @DeleteMapping("/delete/{user-id}")
+    public ResponseEntity<Void> deleteById(
+            @PathVariable("user-id") Long userId
+    ) {
+        service.deleteUserById(userId);
+        return ResponseEntity.noContent().build();
     }
 }
