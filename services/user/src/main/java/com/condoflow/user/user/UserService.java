@@ -4,6 +4,7 @@ import com.condoflow.user.common.PageResponse;
 import com.condoflow.user.exception.DocumentAlreadyUsedException;
 import com.condoflow.user.exception.EmailAlreadyUsedException;
 import com.condoflow.user.exception.UserNotFoundException;
+import com.condoflow.user.kafka.UserEventProducer;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +24,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private UserEventProducer producer;
 
     public PageResponse<UserResponse> findAllUsers(int page, int size) {
         // Creamos el objeto pageable como parámetro para la búsqueda
@@ -57,6 +61,7 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    @Transactional
     public Long createUser(UserRequest request) {
 
         if (userRepository.findByEmail(request.email()).isPresent()) {
@@ -67,8 +72,10 @@ public class UserService {
         }
 
         User newUser = userMapper.toUser(request);
+        User savedUser = userRepository.save(newUser);
+        producer.sendUserRegistered(savedUser.getId());
 
-        return userRepository.save(newUser).getId();
+        return savedUser.getId();
     }
 
     public void makeAdmin(Long userId) {
@@ -88,13 +95,12 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void deleteUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID:: " + userId));
-
-        // todo: Enviar mensaje por Kafka hacia servicio de condominio y servicio de auth
-
         userRepository.deleteById(userId);
+        producer.sendUserDeleted(userId);
     }
 
     private Long extractUserId(Jwt jwt) {

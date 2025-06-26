@@ -6,6 +6,7 @@ import com.condoflow.user.common.PageResponse;
 import com.condoflow.user.exception.DocumentAlreadyUsedException;
 import com.condoflow.user.exception.EmailAlreadyUsedException;
 import com.condoflow.user.exception.UserNotFoundException;
+import com.condoflow.user.kafka.UserEventProducer;
 import com.condoflow.user.user.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,12 +28,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserControllerTests {
+public class UserServiceTests {
 
     @Mock
     private UserRepository repository;
     @Mock
     private UserMapper mapper;
+    @Mock
+    private UserEventProducer userEventProducer;
     @InjectMocks
     UserService service;
 
@@ -171,6 +174,7 @@ public class UserControllerTests {
 
         Long outcome = service.createUser(request);
         assertThat(outcome).isEqualTo(5L);
+        verify(userEventProducer).sendUserRegistered(5L);
     }
 
     @Test
@@ -263,5 +267,24 @@ public class UserControllerTests {
 
         assertThatThrownBy(() -> service.updateUser(1L, upd))
                 .isInstanceOf(DocumentAlreadyUsedException.class);
+    }
+
+    @Test
+    void deleteUser_happy() {
+        Long userId = 1L;
+        when(repository.findById(userId)).thenReturn(Optional.of(existing));
+
+        service.deleteUserById(userId);
+
+        verify(repository).deleteById(userId);
+        verify(userEventProducer).sendUserDeleted(userId);
+    }
+
+    @Test
+    void deleteUser_notFound() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+        UserRequest upd = request; // id=1
+        assertThatThrownBy(() -> service.deleteUserById(1L))
+                .isInstanceOf(UserNotFoundException.class);
     }
 }
