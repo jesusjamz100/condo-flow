@@ -1,5 +1,45 @@
+#spring:
+#  config:
+#    import: optional:configserver:http://config-server:8888
+#  application:
+#    name: gateway-service
+
+server:
+  port: 8222
+
 spring:
-  config:
-    import: optional:configserver:http://config-server:8888
   application:
     name: gateway-service
+
+  cloud:
+    config:
+      enabled: false
+    gateway:
+      routes:
+        - id: user
+          uri: http://localhost:8080
+          predicates:
+            - Path=/users,/users/**
+#          filters:
+#            - TokenRelay
+
+        - id: auth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/auth,/auth/**
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8082/.well-known/jwks.json
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway,health,info
+
+eureka:
+  client:
+    enabled: false
