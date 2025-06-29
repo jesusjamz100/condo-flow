@@ -1,3 +1,11 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway,health,info,refresh
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
 server:
   port: 8222
 spring:
@@ -9,17 +17,16 @@ spring:
           jwk-set-uri: http://auth-service/.well-known/jwks.json
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-      routes:
-        - id: user
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/users/**
-          filters:
-            - TokenRelay
-        - id: auth
-          uri: lb://AUTH-SERVICE
-          predicates:
-            - Path=/auth/**
+      server:
+        webflux:
+          routes:
+            - id: user
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/users,/users/**
+#              filters:
+#                - TokenRelay
+            - id: auth
+              uri: lb://AUTH-SERVICE
+              predicates:
+                - Path=/auth/**

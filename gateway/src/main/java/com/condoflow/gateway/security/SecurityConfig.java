@@ -25,13 +25,16 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(ex -> ex
-                        .pathMatchers("/auth/**", "/actuator/**").permitAll()
-                        .anyExchange().authenticated()
-                )
-                // aquí activas Resource Server con JWT
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(Customizer.withDefaults())
+                        .anyExchange().permitAll()
                 );
+//                .authorizeExchange(ex -> ex
+//                        .pathMatchers("/auth/**", "/actuator/**").permitAll()
+//                        .anyExchange().authenticated()
+//                )
+//                // aquí activas Resource Server con JWT
+//                .oauth2ResourceServer(oauth2 -> oauth2
+//                        .jwt(Customizer.withDefaults())
+//                );
         return http.build();
     }
 
