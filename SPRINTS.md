@@ -5,6 +5,27 @@ Finalizar y entregar una aplicación backend distribuida por microservicios para
 
 ---
 
+## ⚙️ Sprint 0: Configuración inicial (Jun 15 – Jun 28)
+
+### 🎯 Objetivos
+- Crear la base del sistema de microservicios.
+- Montar el entorno de desarrollo completo con Docker.
+- Implementar los primeros servicios fundamentales: usuario, configuración centralizada y descubrimiento.
+
+### ✅ Tareas realizadas
+- [x] Crear `config-server` para configuración centralizada
+- [x] Crear `eureka-server` para descubrimiento de servicios
+- [x] Crear `user-service` con endpoints de registro y gestión de usuarios
+- [x] Dockerizar los servicios anteriores
+- [x] Crear y configurar contenedores en `docker-compose` para:
+    - PostgreSQL
+    - Redis
+    - Kafka + Zookeeper
+- [x] Integrar todos los servicios al ecosistema Eureka
+- [x] Probar conexión entre servicios vía `docker-compose`
+
+---
+
 ## 🚀 Sprint 1: Seguridad y Autenticación (Jun 29 – Jul 12)
 
 ### 🎯 Objetivos
