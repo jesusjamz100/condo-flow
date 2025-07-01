@@ -20,8 +20,8 @@ spring:
           uri: http://localhost:8080
           predicates:
             - Path=/users,/users/**
-#          filters:
-#            - TokenRelay
+          filters:
+            - TokenRelay
 
         - id: auth
           uri: http://localhost:8081
@@ -32,7 +32,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8082/.well-known/jwks.json
+          issuer-uri: http://localhost:8081
+#          jwk-set-uri: http://localhost:8082/.well-known/jwks.json
 
 management:
   endpoints:
