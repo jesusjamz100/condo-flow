@@ -5,10 +5,27 @@ server:
       timeout: 30m
 
 spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+  sql:
+    init:
+      mode: always
+      schema-locations:
+        - classpath:org/springframework/security/oauth2/server/authorization/oauth2-authorization-schema.sql
+        - classpath:org/springframework/security/oauth2/server/authorization/oauth2-authorization-consent-schema.sql
+
   session:
     store-type: redis
   redis:
-    host: localhost
+    host: redis
     port: 6379
   security:
     oauth2:
