@@ -19,8 +19,7 @@ spring:
     init:
       mode: always
       schema-locations:
-        - classpath:org/springframework/security/oauth2/server/authorization/oauth2-authorization-schema.sql
-        - classpath:org/springframework/security/oauth2/server/authorization/oauth2-authorization-consent-schema.sql
+        - classpath:schema.sql
 
   session:
     store-type: redis

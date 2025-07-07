@@ -1,6 +1,8 @@
-package com.condoflow.auth.config.user;
+package com.condoflow.auth.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,11 +26,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Email
+    @Column(unique = true, nullable = false, length = 150)
     private String email;
 
+    @NotBlank
+    @Column(nullable = false)
     private String password;
-    private Boolean enabled;
+
+    @Column(nullable = false)
+    private boolean enabled = true;
+
+    @NotBlank
+    @Column(nullable = false, length = 50)
+    private Role role;
 
     @CreatedDate
     @Column(updatable = false, nullable = false)
