@@ -1,5 +1,7 @@
-package com.condoflow.auth.user;
+package com.condoflow.auth.user.details;
 
+import com.condoflow.auth.user.User;
+import com.condoflow.auth.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

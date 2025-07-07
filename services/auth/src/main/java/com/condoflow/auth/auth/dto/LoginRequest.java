@@ -1,4 +1,4 @@
-package com.condoflow.auth.user.dto;
+package com.condoflow.auth.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

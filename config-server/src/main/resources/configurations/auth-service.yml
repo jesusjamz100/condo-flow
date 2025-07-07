@@ -30,3 +30,8 @@ spring:
     oauth2:
       authorizationserver:
         issuer: http://auth-service:8081
+
+feign:
+  client:
+    user-service:
+      url: http://user-service:8080

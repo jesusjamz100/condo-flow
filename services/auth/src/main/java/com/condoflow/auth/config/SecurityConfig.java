@@ -1,6 +1,6 @@
 package com.condoflow.auth.config;
 
-import com.condoflow.auth.user.CustomUserDetailsServiceImpl;
+import com.condoflow.auth.user.details.CustomUserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;

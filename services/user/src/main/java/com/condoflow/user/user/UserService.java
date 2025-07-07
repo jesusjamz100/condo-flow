@@ -78,6 +78,10 @@ public class UserService {
         return savedUser.getId();
     }
 
+    public Boolean existsByDocument(String document) {
+        return userRepository.findByDocument(document).isPresent();
+    }
+
     public void makeAdmin(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID:: " + userId));

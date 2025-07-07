@@ -1,5 +1,7 @@
-package com.condoflow.auth.user;
+package com.condoflow.auth.user.details;
 
+import com.condoflow.auth.user.Role;
+import com.condoflow.auth.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;

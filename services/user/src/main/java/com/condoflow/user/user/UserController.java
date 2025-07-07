@@ -43,6 +43,11 @@ public class UserController {
         return ResponseEntity.ok(service.createUser(request));
     }
 
+    @GetMapping("/document/exists/{document}")
+    public Boolean existsByDocument(@PathVariable("document") String document) {
+        return service.existsByDocument(document);
+    }
+
     @PreAuthorize("@auth.isAdmin(principal)")
     @PatchMapping("/makeAdmin/{user-id}")
     public ResponseEntity<Void> makeAdmin(
