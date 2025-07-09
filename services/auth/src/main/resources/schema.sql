@@ -9,7 +9,7 @@ CREATE TABLE _user (
 );
 
 CREATE TABLE oauth2_authorization (
-  id VARCHAR(100) PRIMARY KEY,
+  id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
   registered_client_id VARCHAR(100) NOT NULL,
   principal_name VARCHAR(200) NOT NULL,
   authorization_grant_type VARCHAR(100) NOT NULL,

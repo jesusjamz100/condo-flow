@@ -39,6 +39,7 @@ public class User {
 
     @NotBlank
     @Column(nullable = false, length = 50)
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @CreatedDate
