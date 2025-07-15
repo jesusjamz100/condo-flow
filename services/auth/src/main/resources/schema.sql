@@ -9,12 +9,12 @@ CREATE TABLE _user (
 );
 
 CREATE TABLE oauth2_authorization (
-  id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+  id VARCHAR(100) NOT NULL PRIMARY KEY,
   registered_client_id VARCHAR(100) NOT NULL,
   principal_name VARCHAR(200) NOT NULL,
   authorization_grant_type VARCHAR(100) NOT NULL,
   authorized_scopes VARCHAR(1000),
-  attributes BYTEA,
+  attributes VARCHAR,
   state VARCHAR(500),
   authorization_code_value BYTEA,
   authorization_code_issued_at TIMESTAMP,

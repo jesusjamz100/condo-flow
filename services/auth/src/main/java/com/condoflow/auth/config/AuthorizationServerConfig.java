@@ -1,6 +1,7 @@
 package com.condoflow.auth.config;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -125,8 +126,6 @@ public class AuthorizationServerConfig {
                                 .refreshTokenTimeToLive(Duration.ofDays(30))
                                 .build())
                         .build();
-                System.out.println("clientSettings = " + gateway.getClientSettings().getSettings());
-                System.out.println("tokenSettings = " + gateway.getTokenSettings().getSettings());
                 repository.save(gateway);
             }
 
@@ -143,8 +142,6 @@ public class AuthorizationServerConfig {
                                 .requireAuthorizationConsent(true)
                                 .build())
                         .build();
-                System.out.println("clientSettings = " + client.getClientSettings().getSettings());
-                System.out.println("tokenSettings = " + client.getTokenSettings().getSettings());
                 repository.save(client);
             }
         };
@@ -153,7 +150,14 @@ public class AuthorizationServerConfig {
     // Persistencia JDBC de autorizaciones (tokens/grants)
     @Bean
     public OAuth2AuthorizationService authorizationService(JdbcTemplate jdbcTemplate,
-                                                           RegisteredClientRepository clients) {
-        return new JdbcOAuth2AuthorizationService(jdbcTemplate, clients);
+                                                           RegisteredClientRepository clients,
+                                                           ObjectMapper authServerObjectMapper) {
+        JdbcOAuth2AuthorizationService service = new JdbcOAuth2AuthorizationService(jdbcTemplate, clients);
+
+        JdbcOAuth2AuthorizationService.OAuth2AuthorizationRowMapper rowMapper = new JdbcOAuth2AuthorizationService.OAuth2AuthorizationRowMapper(clients);
+        rowMapper.setObjectMapper(authServerObjectMapper);
+        service.setAuthorizationRowMapper(rowMapper);
+
+        return service;
     }
 }
