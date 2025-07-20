@@ -3,7 +3,7 @@ eureka:
     hostname: discovery-service
   client:
     service-url:
-      defaultZone: http://discovery-service:8761/eureka
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://discovery-service:8761/eureka}
 
 name:
   value: condoflow
