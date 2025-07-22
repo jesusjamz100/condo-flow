@@ -27,7 +27,6 @@ public class SecurityConfig {
                         .pathMatchers(PERMITTED_URLS).permitAll()
                         .anyExchange().authenticated()
                 )
-                .oauth2Login(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(Customizer.withDefaults())
                 );

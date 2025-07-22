@@ -16,7 +16,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://auth-service:8081
+          issuer-uri: http://localhost:8080/realms/condoflow
+          jwk-set-uri: http://keycloak:8080/realms/condoflow/protocol/openid-connect/certs
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
