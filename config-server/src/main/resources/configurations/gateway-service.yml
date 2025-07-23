@@ -13,10 +13,10 @@ spring:
       default-filters:
         - TokenRelay
       routes:
-        - id: user
-          uri: lb://USER-SERVICE
+        - id: condo
+          uri: lb://CONDO-SERVICE
           predicates:
-            - Path=/users,/users/**
+            - Path=/users,/users/**,/condo,/condo/**
           filters:
             - StripPrefix=1
 
