@@ -70,10 +70,10 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ready" ]
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:8080/health/ready" ]
       interval: 30s
-      timeout: 5s
-      retries: 5
+      timeout: 10s
+      retries: 20
     command: start
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
@@ -151,17 +151,17 @@ services:
     networks:
       - condo-net
 
-  # 8) User Service
-  user-service:
+  # 8) Condo Service
+  condo-service:
     build:
-      context: ./services/user
-    image: user-service
-    container_name: user-service
+      context: ./services/condo
+    image: condo-service
+    container_name: condo-service
     ports:
-      - "8081:8081"
+      - "8082:8082"
     environment:
       # Pasamos las mismas vars de Postgres
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/userdb
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/condodb
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
 
