@@ -1,8 +1,8 @@
 package com.condoflow.condo.handler;
 
-import com.condoflow.user.exception.DocumentAlreadyUsedException;
-import com.condoflow.user.exception.EmailAlreadyUsedException;
-import com.condoflow.user.exception.UserNotFoundException;
+import com.condoflow.condo.exception.DocumentAlreadyUsedException;
+import com.condoflow.condo.exception.EmailAlreadyUsedException;
+import com.condoflow.condo.exception.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
