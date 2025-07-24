@@ -29,7 +29,7 @@ public class Apartment extends BaseEntity {
     private String code;
 
     @Enumerated(STRING)
-    private String tower;
+    private Tower tower;
 
     @Column(nullable = false)
     private BigDecimal balance = BigDecimal.ZERO;
