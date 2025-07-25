@@ -19,6 +19,6 @@ public class ResidentController {
 
     @GetMapping("/me")
     public ResponseEntity<ResidentResponse> me(@AuthenticationPrincipal Jwt jwt) {
-        return ResponseEntity.ok(service.getMe(jwt.getSubject()));
+        return ResponseEntity.ok(service.getMe(jwt));
     }
 }
