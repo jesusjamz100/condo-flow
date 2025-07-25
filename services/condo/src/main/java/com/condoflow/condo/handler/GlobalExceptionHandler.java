@@ -2,6 +2,7 @@ package com.condoflow.condo.handler;
 
 import com.condoflow.condo.exception.DocumentAlreadyUsedException;
 import com.condoflow.condo.exception.EmailAlreadyUsedException;
+import com.condoflow.condo.exception.ResidentAlreadyExistsException;
 import com.condoflow.condo.exception.ResidentNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -38,6 +39,13 @@ public class GlobalExceptionHandler {
                 .body(exp.getMsg());
     }
 
+    @ExceptionHandler(ResidentAlreadyExistsException.class)
+    public ResponseEntity<String> handler(ResidentAlreadyExistsException exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(exp.getMsg());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exp) {
         Map<String, String> errors = new HashMap<String, String>();
@@ -57,6 +65,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleException(Exception exp) {
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
-                .body("Internal error, contact the admin");
+                .body("Internal error, contact the admin " + exp);
     }
 }
