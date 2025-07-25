@@ -45,12 +45,20 @@ public class SecurityConfig {
                 "/actuator/**",
                 "/public/**"
         };
+        final String[] ADMIN_URLS = {
+                "/residents/admin/**",
+                "/apartments/admin/**"
+        };
+        final String[] RESIDENT_URLS = {
+                "/residents/**",
+                "/apartments/**"
+        };
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PERMITTED_URLS).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/**").hasAnyRole("ADMIN", "RESIDENT")
+                        .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
+                        .requestMatchers(RESIDENT_URLS).hasAnyRole("ADMIN", "RESIDENT")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

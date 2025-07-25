@@ -2,7 +2,7 @@ package com.condoflow.condo.handler;
 
 import com.condoflow.condo.exception.DocumentAlreadyUsedException;
 import com.condoflow.condo.exception.EmailAlreadyUsedException;
-import com.condoflow.condo.exception.UserNotFoundException;
+import com.condoflow.condo.exception.ResidentNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,8 +31,8 @@ public class GlobalExceptionHandler {
                 .body(exp.getMsg());
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handler(UserNotFoundException exp) {
+    @ExceptionHandler(ResidentNotFoundException.class)
+    public ResponseEntity<String> handler(ResidentNotFoundException exp) {
         return ResponseEntity
                 .status(NOT_FOUND)
                 .body(exp.getMsg());
