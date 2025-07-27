@@ -2,8 +2,10 @@ package com.condoflow.condo.handler;
 
 import com.condoflow.condo.exception.DocumentAlreadyUsedException;
 import com.condoflow.condo.exception.EmailAlreadyUsedException;
-import com.condoflow.condo.exception.UserNotFoundException;
+import com.condoflow.condo.exception.ResidentAlreadyExistsException;
+import com.condoflow.condo.exception.ResidentNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,10 +33,17 @@ public class GlobalExceptionHandler {
                 .body(exp.getMsg());
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handler(UserNotFoundException exp) {
+    @ExceptionHandler(ResidentNotFoundException.class)
+    public ResponseEntity<String> handler(ResidentNotFoundException exp) {
         return ResponseEntity
                 .status(NOT_FOUND)
+                .body(exp.getMsg());
+    }
+
+    @ExceptionHandler(ResidentAlreadyExistsException.class)
+    public ResponseEntity<String> handler(ResidentAlreadyExistsException exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
                 .body(exp.getMsg());
     }
 
@@ -53,10 +62,17 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(errors));
     }
 
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<Void> handleException(AuthorizationDeniedException exp) {
+        return ResponseEntity
+                .status(UNAUTHORIZED)
+                .build();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception exp) {
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
-                .body("Internal error, contact the admin");
+                .body("Internal error, contact the admin " + exp);
     }
 }

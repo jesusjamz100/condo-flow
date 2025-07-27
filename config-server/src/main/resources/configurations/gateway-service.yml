@@ -16,9 +16,7 @@ spring:
         - id: condo
           uri: lb://CONDO-SERVICE
           predicates:
-            - Path=/users,/users/**,/condo,/condo/**
-          filters:
-            - StripPrefix=1
+            - Path=/residents,/residents/**,/condo,/condo/**
 
   security:
     oauth2:

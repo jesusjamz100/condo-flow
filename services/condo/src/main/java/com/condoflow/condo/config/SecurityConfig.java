@@ -1,12 +1,16 @@
 package com.condoflow.condo.config;
 
+import com.condoflow.condo.config.filter.ResidentProfileFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.List;
@@ -14,7 +18,11 @@ import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final ResidentProfileFilter residentProfileFilter;
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
@@ -39,18 +47,26 @@ public class SecurityConfig {
                 "/actuator/**",
                 "/public/**"
         };
+        final String[] ADMIN_URLS = {
+                "/residents/admin/**",
+                "/apartments/admin/**"
+        };
+        final String[] RESIDENT_URLS = {
+                "/residents/**",
+                "/apartments/**"
+        };
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PERMITTED_URLS).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/**").hasAnyRole("ADMIN", "RESIDENT")
+                        .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
+                        .requestMatchers(RESIDENT_URLS).hasAnyRole("ADMIN", "RESIDENT")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt
-                                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                );
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                )
+                .addFilterAfter(residentProfileFilter, BearerTokenAuthenticationFilter.class);
         return http.build();
     }
 }
