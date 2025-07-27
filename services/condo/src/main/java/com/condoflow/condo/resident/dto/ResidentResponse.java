@@ -1,16 +1,9 @@
 package com.condoflow.condo.resident.dto;
 
-import java.util.List;
-
-public record ResidentResponse (
+public record ResidentResponse(
         // IDENTIFICATION DATA
         Integer id,
         String keycloakUserId,
-        // JWT DATA (KEYCLOAK)
-        String username,
-        String email,
-        String firstName,
-        String lastName,
         // RESIDENT EXTRA DATA
         String phoneNumber,
         String emergencyContactName,
