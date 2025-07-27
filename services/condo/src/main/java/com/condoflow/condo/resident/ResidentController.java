@@ -43,14 +43,14 @@ public class ResidentController {
         return ResponseEntity.ok(service.findAllUsers(page, size));
     }
 
-    @GetMapping("/findResidentById/{residentId}")
+    @GetMapping("/admin/findResidentById/{residentId}")
     public ResponseEntity<ResidentResponse> findResidentById(
             @PathVariable("residentId") Integer residentId
     ) {
         return ResponseEntity.ok(service.findResidentById(residentId));
     }
 
-    @GetMapping("/findResidentByKeycloakUserId/{keycloakUserId}")
+    @GetMapping("/admin/findResidentByKeycloakUserId/{keycloakUserId}")
     public ResponseEntity<ResidentResponse> findResidentByKeycloakUserId(
             @PathVariable("keycloakUserId") String keycloakUserId
     ) {

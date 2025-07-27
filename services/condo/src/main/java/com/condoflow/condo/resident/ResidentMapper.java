@@ -13,10 +13,10 @@ public class ResidentMapper {
         return new ResidentProfileResponse(
                 resident.getId(),
                 resident.getKeycloakUserId(),
-                jwt.getClaim("given_name"),
-                jwt.getClaim("family_name"),
                 jwt.getClaim("preferred_username"),
                 jwt.getClaim("email"),
+                jwt.getClaim("given_name"),
+                jwt.getClaim("family_name"),
                 resident.getPhoneNumber(),
                 resident.getEmergencyContactName(),
                 resident.getEmergencyContactPhone(),
