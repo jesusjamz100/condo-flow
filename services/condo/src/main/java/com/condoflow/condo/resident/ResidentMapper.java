@@ -1,16 +1,16 @@
 package com.condoflow.condo.resident;
 
-import com.condoflow.condo.resident.dto.PublicResidentResponse;
-import com.condoflow.condo.resident.dto.ResidentRequest;
 import com.condoflow.condo.resident.dto.ResidentResponse;
+import com.condoflow.condo.resident.dto.ResidentRequest;
+import com.condoflow.condo.resident.dto.ResidentProfileResponse;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ResidentMapper {
 
-    public ResidentResponse toResidentResponse(Resident resident, Jwt jwt) {
-        return new ResidentResponse(
+    public ResidentProfileResponse toResidentProfileResponse(Resident resident, Jwt jwt) {
+        return new ResidentProfileResponse(
                 resident.getId(),
                 resident.getKeycloakUserId(),
                 jwt.getClaim("given_name"),
@@ -27,8 +27,8 @@ public class ResidentMapper {
         );
     }
 
-    public PublicResidentResponse toPublicResidentResponse(Resident resident) {
-        return new PublicResidentResponse(
+    public ResidentResponse toResidentResponse(Resident resident) {
+        return new ResidentResponse(
                 resident.getId(),
                 resident.getKeycloakUserId(),
                 resident.getPhoneNumber(),
