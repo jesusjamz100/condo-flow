@@ -43,10 +43,49 @@ public class ResidentController {
         return ResponseEntity.ok(service.findAllUsers(page, size));
     }
 
+    @GetMapping("/findResidentById/{residentId}")
+    public ResponseEntity<ResidentResponse> findResidentById(
+            @PathVariable("residentId") Integer residentId
+    ) {
+        return ResponseEntity.ok(service.findResidentById(residentId));
+    }
+
+    @GetMapping("/findResidentByKeycloakUserId/{keycloakUserId}")
+    public ResponseEntity<ResidentResponse> findResidentByKeycloakUserId(
+            @PathVariable("keycloakUserId") String keycloakUserId
+    ) {
+        return ResponseEntity.ok(service.findResidentByKeycloakUserId(keycloakUserId));
+    }
+
     @PostMapping("/admin/createResident")
     public ResponseEntity<Integer> createResident(
             @RequestBody @Valid ResidentRequest request
     ) {
         return ResponseEntity.ok(service.createResident(request));
+    }
+
+    @PatchMapping("/admin/updateKeycloakUserId/{residentId}/{keycloakUserId}")
+    public ResponseEntity<Void> updateKeycloakUserId(
+            @PathVariable("residentId") Integer residentId,
+            @PathVariable("keycloakUserId") String keycloakUserId
+    ) {
+        service.updateKeycloakUserId(residentId, keycloakUserId);
+        return ResponseEntity.accepted().build();
+    }
+
+    @PatchMapping("/admin/updatePrimaryResident/{residentId}")
+    public ResponseEntity<Void> updatePrimaryResident(
+            @PathVariable("residentId") Integer residentId
+    ) {
+        service.updatePrimaryResident(residentId);
+        return ResponseEntity.accepted().build();
+    }
+
+    @DeleteMapping("/admin/deleteById/{residentId}")
+    public ResponseEntity<Void> deleteResidentById(
+            @PathVariable("residentId") Integer residentId
+    ) {
+        service.deleteResidentById(residentId);
+        return ResponseEntity.noContent().build();
     }
 }

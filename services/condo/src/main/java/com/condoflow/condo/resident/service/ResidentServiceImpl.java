@@ -76,13 +76,48 @@ public class ResidentServiceImpl implements ResidentService {
     }
 
     @Override
+    public ResidentResponse findResidentById(Integer residentId) {
+        Resident resident = repository.findById(residentId)
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with ID:: " + residentId));
+        return mapper.toResidentResponse(resident);
+    }
+
+    @Override
+    public ResidentResponse findResidentByKeycloakUserId(String keycloakUserId) {
+        Resident resident = repository.findByKeycloakUserId(keycloakUserId)
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with Keycloak User ID:: " + keycloakUserId));
+        return mapper.toResidentResponse(resident);
+    }
+
+    @Override
     public Integer createResident(ResidentRequest request) {
-        boolean userExists = repository.findByKeycloakUserId(request.keycloakUserId()).isPresent();
-        if (userExists) {
-            throw new ResidentAlreadyExistsException("Resident already exists with keycloakUserId:: " + request.keycloakUserId());
-        }
+        if (repository.findById(request.id()).isEmpty())
+            throw new ResidentNotFoundException("Resident not found with ID:: " + request.id());
         Resident newResident = mapper.toResident(request);
         return repository.save(newResident).getId();
+    }
+
+    @Override
+    public void updateKeycloakUserId(Integer residentId, String keycloakUserId) {
+        Resident resident = repository.findById(residentId)
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with ID:: " + residentId));
+        resident.setKeycloakUserId(keycloakUserId);
+        repository.save(resident);
+    }
+
+    @Override
+    public void updatePrimaryResident(Integer residentId) {
+        Resident resident = repository.findById(residentId)
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with ID:: " + residentId));
+        resident.setPrimaryResident(!resident.isPrimaryResident());
+        repository.save(resident);
+    }
+
+    @Override
+    public void deleteResidentById(Integer residentId) {
+        if (repository.findById(residentId).isEmpty())
+            throw new ResidentNotFoundException("Resident not found with ID:: " + residentId);
+        repository.deleteById(residentId);
     }
 
     private static void mergeResident(Resident resident, ResidentRequest request) {

@@ -9,7 +9,12 @@ import org.springframework.security.oauth2.jwt.Jwt;
 public interface ResidentService {
     ResidentProfileResponse getMe(Jwt jwt);
     void createIfNotExists(String keycloakId);
-    PageResponse<ResidentResponse> findAllUsers(int page, int size);
-    Integer createResident(ResidentRequest request);
     ResidentResponse updateResident(ResidentRequest request);
+    PageResponse<ResidentResponse> findAllUsers(int page, int size);
+    ResidentResponse findResidentById(Integer residentId);
+    ResidentResponse findResidentByKeycloakUserId(String keycloakUserId);
+    Integer createResident(ResidentRequest request);
+    void updateKeycloakUserId(Integer residentId, String keycloakUserId);
+    void updatePrimaryResident(Integer residentId);
+    void deleteResidentById(Integer residentId);
 }
