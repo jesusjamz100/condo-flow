@@ -40,7 +40,6 @@ condo-flow/
 1. Clona el proyecto:
 ```bash
 git clone https://github.com/jesusjamz100/condo-flow.git
-cd condo-flow/docker
 ```
 2. Construye las imágenes:
 ```bash
