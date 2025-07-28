@@ -5,10 +5,9 @@ import com.condoflow.condo.apartment.service.ApartmentService;
 import com.condoflow.condo.common.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +16,15 @@ public class ApartmentController {
 
     private final ApartmentService service;
 
+    @GetMapping("/myApartments")
+    public ResponseEntity<PageResponse<ApartmentResponse>> findMyApartments(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+    ) {
+        return ResponseEntity.ok(service.findMyApartments(jwt, page, size));
+    }
+
     // ADMIN ROUTES
     @GetMapping("/admin")
     public ResponseEntity<PageResponse<ApartmentResponse>> findAllApartments(
@@ -24,5 +32,12 @@ public class ApartmentController {
             @RequestParam(name = "size", defaultValue = "10", required = false) int size
     ) {
         return ResponseEntity.ok(service.findAllApartments(page, size));
+    }
+
+    @GetMapping("/admin/findApartmentById/{apartmentId}")
+    public ResponseEntity<ApartmentResponse> findApartmentById(
+            @PathVariable("apartmentId") int apartmentId
+    ) {
+        return ResponseEntity.ok(service.findApartmentById(apartmentId));
     }
 }
