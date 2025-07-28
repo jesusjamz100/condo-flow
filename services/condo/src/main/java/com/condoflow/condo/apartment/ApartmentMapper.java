@@ -1,5 +1,6 @@
 package com.condoflow.condo.apartment;
 
+import com.condoflow.condo.apartment.dto.ApartmentRequest;
 import com.condoflow.condo.apartment.dto.ApartmentResponse;
 import com.condoflow.condo.parking.dto.ParkingSlotResponse;
 import com.condoflow.condo.resident.Resident;
@@ -42,5 +43,14 @@ public class ApartmentMapper {
                 parkingSlots
                 // residents
         );
+    }
+
+    public Apartment toApartment(ApartmentRequest request) {
+        return Apartment.builder()
+                .code(request.code())
+                .tower(request.tower())
+                .sqm(request.sqm())
+                .aliquot(request.aliquot())
+                .build();
     }
 }

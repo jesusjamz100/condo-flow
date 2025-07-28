@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ApartmentRepository extends JpaRepository<Apartment, Integer> {
 
@@ -19,4 +21,15 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Integer> {
             """)
     Page<Apartment> findAllByResidentKeycloakUserId(Pageable pageable,
                                                     @Param("keycloakUserId") String keycloakUserId);
+
+    boolean existsByCode(String code);
+
+    @Query("""
+            select a
+            from Apartment a
+            join a.residents r
+            where a.id = :apartmentId AND r.id = :residentId
+            """)
+    Optional<Apartment> findApartmentByIdAndResidentId(@Param("apartmentId") int apartmentId,
+                                                       @Param("residentId") int residentId);
 }

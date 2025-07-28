@@ -51,6 +51,14 @@ public class GlobalExceptionHandler {
                 .body(exp.getMsg());
     }
 
+    @ExceptionHandler(ApartmentAlreadyExists.class)
+    public ResponseEntity<String> handler(ApartmentAlreadyExists exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(exp.getMsg());
+    }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exp) {
         Map<String, String> errors = new HashMap<String, String>();
