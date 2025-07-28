@@ -1,9 +1,8 @@
 package com.condoflow.condo.apartment;
 
-import com.condoflow.condo.apartment.parking.ParkingSlot;
+import com.condoflow.condo.parking.ParkingSlot;
 import com.condoflow.condo.common.ApartmentResident;
 import com.condoflow.condo.common.BaseEntity;
-import com.condoflow.condo.resident.Resident;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,10 +57,6 @@ public class Apartment extends BaseEntity {
     // Relations
     @OneToMany(mappedBy = "apartment", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<ParkingSlot> parkingSlots = new HashSet<>(); // Relation to parking slots as an apartment can have more than one
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_resident_id")
-    private Resident ownerResident;
 
     @OneToMany(mappedBy = "apartment", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ApartmentResident> apartmentResidents = new HashSet<>();

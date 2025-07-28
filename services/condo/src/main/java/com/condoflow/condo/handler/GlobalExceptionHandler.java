@@ -1,9 +1,6 @@
 package com.condoflow.condo.handler;
 
-import com.condoflow.condo.exception.DocumentAlreadyUsedException;
-import com.condoflow.condo.exception.EmailAlreadyUsedException;
-import com.condoflow.condo.exception.ResidentAlreadyExistsException;
-import com.condoflow.condo.exception.ResidentNotFoundException;
+import com.condoflow.condo.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
@@ -46,6 +43,21 @@ public class GlobalExceptionHandler {
                 .status(BAD_REQUEST)
                 .body(exp.getMsg());
     }
+
+    @ExceptionHandler(ApartmentNotFoundException.class)
+    public ResponseEntity<String> handler(ApartmentNotFoundException exp) {
+        return ResponseEntity
+                .status(NOT_FOUND)
+                .body(exp.getMsg());
+    }
+
+    @ExceptionHandler(ApartmentAlreadyExists.class)
+    public ResponseEntity<String> handler(ApartmentAlreadyExists exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(exp.getMsg());
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exp) {

@@ -1,4 +1,4 @@
-package com.condoflow.condo.apartment.parking;
+package com.condoflow.condo.parking;
 
 import com.condoflow.condo.apartment.Apartment;
 import com.condoflow.condo.common.BaseEntity;
