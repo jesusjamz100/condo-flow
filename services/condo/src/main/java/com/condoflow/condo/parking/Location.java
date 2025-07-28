@@ -1,4 +1,4 @@
-package com.condoflow.condo.apartment.parking;
+package com.condoflow.condo.parking;
 
 public enum Location {
     GROUND,
