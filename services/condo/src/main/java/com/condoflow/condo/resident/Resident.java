@@ -1,8 +1,7 @@
 package com.condoflow.condo.resident;
 
 
-import com.condoflow.condo.apartment.Apartment;
-import com.condoflow.condo.common.ApartmentResident;
+import com.condoflow.condo.common.relation.ApartmentResident;
 import com.condoflow.condo.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
@@ -33,12 +32,7 @@ public class Resident extends BaseEntity {
     @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "Invalid phone number")
     private String emergencyContactPhone;
 
-    private boolean primaryResident;
-
     // Relations
     @OneToMany(mappedBy = "resident", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ApartmentResident> apartmentResidents = new HashSet<>(); // Many To Many with apartments
-
-    @OneToMany(mappedBy = "ownerResident", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Apartment> ownedApartments = new HashSet<>(); // One-To-Many to owned apartments
 }

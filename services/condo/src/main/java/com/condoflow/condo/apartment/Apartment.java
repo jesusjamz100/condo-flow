@@ -1,7 +1,7 @@
 package com.condoflow.condo.apartment;
 
 import com.condoflow.condo.parking.ParkingSlot;
-import com.condoflow.condo.common.ApartmentResident;
+import com.condoflow.condo.common.relation.ApartmentResident;
 import com.condoflow.condo.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;

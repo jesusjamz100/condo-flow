@@ -42,7 +42,6 @@ public class ResidentServiceImpl implements ResidentService {
                 .orElseGet(() -> {
                     Resident resident = Resident.builder()
                             .keycloakUserId(keycloakUserId)
-                            .primaryResident(false)
                             .build();
                     return repository.save(resident);
                 });
@@ -102,14 +101,6 @@ public class ResidentServiceImpl implements ResidentService {
         Resident resident = repository.findById(residentId)
                 .orElseThrow(() -> new ResidentNotFoundException("Resident not found with ID:: " + residentId));
         resident.setKeycloakUserId(keycloakUserId);
-        repository.save(resident);
-    }
-
-    @Override
-    public void updatePrimaryResident(Integer residentId) {
-        Resident resident = repository.findById(residentId)
-                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with ID:: " + residentId));
-        resident.setPrimaryResident(!resident.isPrimaryResident());
         repository.save(resident);
     }
 

@@ -12,10 +12,8 @@ public record ResidentProfileResponse(
         // RESIDENT EXTRA DATA
         String phoneNumber,
         String emergencyContactName,
-        String emergencyContactPhone,
-        boolean primaryResident
+        String emergencyContactPhone
         // todo implement Apartment management
-        // List<ApartmentResidentResponse> apartmentResidents,
-        // List<ApartmentResponse>
+        // List<ApartmentResidentResponse> apartmentResidents
 ) {
 }

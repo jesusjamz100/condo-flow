@@ -19,8 +19,7 @@ public class ResidentMapper {
                 jwt.getClaim("family_name"),
                 resident.getPhoneNumber(),
                 resident.getEmergencyContactName(),
-                resident.getEmergencyContactPhone(),
-                resident.isPrimaryResident()
+                resident.getEmergencyContactPhone()
                 // todo implement apartment management
                 // resident.getApartmentResidents(),
                 // resident.getOwnedApartments()
@@ -33,8 +32,7 @@ public class ResidentMapper {
                 resident.getKeycloakUserId(),
                 resident.getPhoneNumber(),
                 resident.getEmergencyContactName(),
-                resident.getEmergencyContactPhone(),
-                resident.isPrimaryResident()
+                resident.getEmergencyContactPhone()
         );
     }
 
@@ -43,7 +41,6 @@ public class ResidentMapper {
                 .keycloakUserId(request.keycloakUserId())
                 .emergencyContactName(request.emergencyContactName())
                 .emergencyContactPhone(request.emergencyContactPhone())
-                .phoneNumber(request.phoneNumber())
-                .primaryResident(request.isPrimaryResident()).build();
+                .phoneNumber(request.phoneNumber()).build();
     }
 }

@@ -1,4 +1,4 @@
-package com.condoflow.condo.common;
+package com.condoflow.condo.common.relation;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

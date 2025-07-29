@@ -35,7 +35,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     @Override
     public PageResponse<ApartmentResponse> findMyApartments(Jwt jwt, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("code").ascending());
-        Page<Apartment> apartments = repository.findAllByResidentKeycloakUserId(pageable, jwt.getSubject());
+        Page<Apartment> apartments = repository.findByApartmentResidentsResidentKeycloakUserId(jwt.getSubject(), pageable);
         List<ApartmentResponse> apartmentResponse = apartments.stream()
                 .map(mapper::toApartmentResponse)
                 .toList();
