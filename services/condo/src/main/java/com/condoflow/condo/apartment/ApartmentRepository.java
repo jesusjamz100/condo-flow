@@ -12,24 +12,19 @@ import java.util.Optional;
 @Repository
 public interface ApartmentRepository extends JpaRepository<Apartment, Integer> {
 
-    @Query("""
-            select a
-            from ApartmentResident ar
-            join ar.apartment a
-            join ar.resident r
-            where r.keycloakUserId = :keycloakUserId
-            """)
-    Page<Apartment> findAllByResidentKeycloakUserId(Pageable pageable,
-                                                    @Param("keycloakUserId") String keycloakUserId);
+    Page<Apartment> findByApartmentResidentsResidentKeycloakUserId(String keycloakUserId, Pageable pageable);
 
     boolean existsByCode(String code);
 
     @Query("""
             select a
             from Apartment a
-            join a.residents r
-            where a.id = :apartmentId AND r.id = :residentId
+            join a.apartmentResidents ar
+            where a.id = :apartmentId
+                and ar.resident.id = :residentId
             """)
     Optional<Apartment> findApartmentByIdAndResidentId(@Param("apartmentId") int apartmentId,
                                                        @Param("residentId") int residentId);
+
+    Page<Apartment> findByApartmentResidentsResidentId(int residentId, Pageable pageable);
 }

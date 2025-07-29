@@ -1,6 +1,7 @@
 package com.condoflow.condo.apartment.dto;
 
 import com.condoflow.condo.apartment.Tower;
+import com.condoflow.condo.common.relation.dto.ApartmentResidentResponse;
 import com.condoflow.condo.parking.dto.ParkingSlotResponse;
 
 import java.math.BigDecimal;
@@ -13,8 +14,7 @@ public record ApartmentResponse(
         BigDecimal balance,
         BigDecimal sqm,
         BigDecimal aliquot,
-        List<ParkingSlotResponse> parkingSlots
-        // todo
-//        List<ApartmentResidentResponse> residents
+        List<ParkingSlotResponse> parkingSlots,
+        List<ApartmentResidentResponse> apartmentResidents
 ) {
 }

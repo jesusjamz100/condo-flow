@@ -1,8 +1,9 @@
-package com.condoflow.condo.common;
+package com.condoflow.condo.common.relation;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import java.util.Objects;
 @Embeddable
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ApartmentResidentId implements Serializable {
     private Integer apartmentId;
     private Integer residentId;

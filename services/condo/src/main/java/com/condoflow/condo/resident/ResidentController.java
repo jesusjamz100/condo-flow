@@ -73,14 +73,6 @@ public class ResidentController {
         return ResponseEntity.accepted().build();
     }
 
-    @PatchMapping("/admin/updatePrimaryResident/{residentId}")
-    public ResponseEntity<Void> updatePrimaryResident(
-            @PathVariable("residentId") Integer residentId
-    ) {
-        service.updatePrimaryResident(residentId);
-        return ResponseEntity.accepted().build();
-    }
-
     @DeleteMapping("/admin/deleteById/{residentId}")
     public ResponseEntity<Void> deleteResidentById(
             @PathVariable("residentId") Integer residentId

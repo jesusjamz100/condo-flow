@@ -1,5 +1,9 @@
 package com.condoflow.condo.resident.dto;
 
+import com.condoflow.condo.common.relation.dto.ApartmentResidentResponse;
+
+import java.util.List;
+
 public record ResidentProfileResponse(
         // IDENTIFICATION DATA
         Integer id,
@@ -13,9 +17,6 @@ public record ResidentProfileResponse(
         String phoneNumber,
         String emergencyContactName,
         String emergencyContactPhone,
-        boolean primaryResident
-        // todo implement Apartment management
-        // List<ApartmentResidentResponse> apartmentResidents,
-        // List<ApartmentResponse>
+        List<ApartmentResidentResponse> apartmentResidents
 ) {
 }

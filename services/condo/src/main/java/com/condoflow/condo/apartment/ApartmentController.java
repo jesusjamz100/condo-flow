@@ -4,7 +4,9 @@ import com.condoflow.condo.apartment.dto.ApartmentRequest;
 import com.condoflow.condo.apartment.dto.ApartmentResponse;
 import com.condoflow.condo.apartment.service.ApartmentService;
 import com.condoflow.condo.common.PageResponse;
+import com.condoflow.condo.resident.dto.ResidentResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/apartments")
+@RequestMapping("/condo")
 public class ApartmentController {
 
     private final ApartmentService service;
@@ -69,6 +71,42 @@ public class ApartmentController {
             @PathVariable("apartmentId") int apartmentId
     ) {
         service.deleteApartmentById(apartmentId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/admin/residents/{residentId}")
+    public ResponseEntity<PageResponse<ApartmentResponse>> getApartmentsByResident(
+            @PathVariable("residentId") int residentId,
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+    ) {
+        return ResponseEntity.ok(service.findApartmentsByResidentId(residentId, page, size));
+    }
+
+    @GetMapping("/admin/{apartmentId}/residents")
+    public ResponseEntity<PageResponse<ResidentResponse>> getApartmentResidents(
+            @PathVariable("apartmentId") int apartmentId,
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+    ) {
+        return ResponseEntity.ok(service.findApartmentResidents(apartmentId, page, size));
+    }
+
+    @PostMapping("/admin/{apartmentId}/residents/{residentId}")
+    public ResponseEntity<Void> addResidentToApartment(
+            @PathVariable("apartmentId") int apartmentId,
+            @PathVariable("residentId") int residentId
+    ) {
+        service.addResidentToApartment(apartmentId, residentId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/admin/{apartmentId}/residents/{residentId}")
+    public ResponseEntity<Void> removeResidentFromApartment(
+            @PathVariable("apartmentId") int apartmentId,
+            @PathVariable("residentId") int residentId
+    ) {
+        service.removeResidentFromApartment(apartmentId, residentId);
         return ResponseEntity.noContent().build();
     }
 }

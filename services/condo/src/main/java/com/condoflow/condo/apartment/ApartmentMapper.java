@@ -2,14 +2,21 @@ package com.condoflow.condo.apartment;
 
 import com.condoflow.condo.apartment.dto.ApartmentRequest;
 import com.condoflow.condo.apartment.dto.ApartmentResponse;
+import com.condoflow.condo.common.relation.ApartmentResidentMapper;
+import com.condoflow.condo.common.relation.dto.ApartmentResidentResponse;
 import com.condoflow.condo.parking.dto.ParkingSlotResponse;
 import com.condoflow.condo.resident.Resident;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ApartmentMapper {
+
+    private final ApartmentResidentMapper apartmentResidentMapper;
+
     public ApartmentResponse toApartmentResponse(Apartment apartment) {
 
         List<ParkingSlotResponse> parkingSlots = apartment.getParkingSlots()
@@ -20,19 +27,6 @@ public class ApartmentMapper {
                         ps.getLocation()
                 )).toList();
 
-        // todo
-//        List<ApartmentResidentResponse> residents = apartment.getApartmentResidents().stream()
-//                .map(ar -> {
-//                    Resident r = ar.getResident();
-//                    return new ApartmentResidentResponse(
-//                            r.getId(),
-//                            r.getKeycloakUserId(),
-//                            ar.getRoleType(),        // OWNER, OCCUPANT, MAIN_OCCUPANT…
-//                            ar.getAssignedDate()
-//                    );
-//                })
-//                .toList();
-
         return new ApartmentResponse(
                 apartment.getId(),
                 apartment.getCode(),
@@ -40,8 +34,10 @@ public class ApartmentMapper {
                 apartment.getBalance(),
                 apartment.getSqm(),
                 apartment.getAliquot(),
-                parkingSlots
-                // residents
+                parkingSlots,
+                apartment.getApartmentResidents().stream()
+                        .map(apartmentResidentMapper::toApartmentResidentResponse)
+                        .toList()
         );
     }
 
