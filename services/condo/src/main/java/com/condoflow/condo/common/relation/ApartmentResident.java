@@ -38,7 +38,6 @@ public class ApartmentResident {
         apartmentResident.setApartment(apartment);
         apartmentResident.setResident(resident);
         apartmentResident.setRoleType(roleType);
-        apartmentResident.setId(new ApartmentResidentId(apartment.getId(), resident.getId()));
 
         // Bi-directional
         apartment.getApartmentResidents().add(apartmentResident);
