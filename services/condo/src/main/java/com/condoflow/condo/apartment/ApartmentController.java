@@ -74,6 +74,15 @@ public class ApartmentController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/admin/residents/{residentId}")
+    public ResponseEntity<PageResponse<ApartmentResponse>> getApartmentsByResident(
+            @PathVariable("residentId") int residentId,
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+    ) {
+        return ResponseEntity.ok(service.findApartmentsByResidentId(residentId, page, size));
+    }
+
     @GetMapping("/admin/{apartmentId}/residents")
     public ResponseEntity<PageResponse<ResidentResponse>> getApartmentResidents(
             @PathVariable("apartmentId") int apartmentId,

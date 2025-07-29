@@ -141,13 +141,34 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
+    public PageResponse<ApartmentResponse> findApartmentsByResidentId(int residentId, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("code").ascending());
+        Page<Apartment> apartments = apartmentRepository.findByApartmentResidentsResidentId(residentId, pageable);
+
+        List<ApartmentResponse> apartmentResponse = apartments.stream()
+                .map(apartmentMapper::toApartmentResponse)
+                .toList();
+
+        return new PageResponse<>(
+                apartmentResponse,
+                apartments.getNumber(),
+                apartments.getSize(),
+                apartments.getTotalElements(),
+                apartments.getTotalPages(),
+                apartments.isFirst(),
+                apartments.isLast()
+        );
+    }
+
+    @Override
     @Transactional
     public void addResidentToApartment(int apartmentId, int residentId) {
         Apartment apartment = apartmentRepository.findById(apartmentId)
                 .orElseThrow(() -> new ApartmentNotFoundException("Apartment not found with ID:: " + apartmentId));
 
         Resident resident = residentRepository.findById(residentId)
-                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with keycloak user ID:: " + residentId));
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with ID:: " + residentId));
 
         boolean alreadyLinked = arRepository.existsByApartmentIdAndResidentId(apartmentId, residentId);
 

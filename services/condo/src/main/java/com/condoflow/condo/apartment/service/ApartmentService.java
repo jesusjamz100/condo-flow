@@ -23,6 +23,8 @@ public interface ApartmentService {
 
     PageResponse<ResidentResponse> findApartmentResidents(int apartmentId, int page, int size);
 
+    PageResponse<ApartmentResponse> findApartmentsByResidentId(int residentId, int page, int size);
+
     void addResidentToApartment(int apartmentId, int residentId);
 
     void removeResidentFromApartment(int apartmentId, int residentId);

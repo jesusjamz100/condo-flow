@@ -25,4 +25,6 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Integer> {
             """)
     Optional<Apartment> findApartmentByIdAndResidentId(@Param("apartmentId") int apartmentId,
                                                        @Param("residentId") int residentId);
+
+    Page<Apartment> findByApartmentResidentsResidentId(int residentId, Pageable pageable);
 }
