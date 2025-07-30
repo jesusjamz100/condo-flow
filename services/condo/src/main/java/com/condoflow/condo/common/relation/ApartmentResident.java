@@ -18,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class ApartmentResident {
 
     @EmbeddedId
-    private ApartmentResidentId id;
+    private ApartmentResidentId id = new ApartmentResidentId();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("apartmentId")

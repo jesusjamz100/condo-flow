@@ -33,6 +33,6 @@ public class Resident extends BaseEntity {
     private String emergencyContactPhone;
 
     // Relations
-    @OneToMany(mappedBy = "resident", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "resident", cascade = { CascadeType.MERGE, CascadeType.REMOVE }, orphanRemoval = true)
     private Set<ApartmentResident> apartmentResidents = new HashSet<>(); // Many To Many with apartments
 }
