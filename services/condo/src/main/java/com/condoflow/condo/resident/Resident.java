@@ -24,6 +24,13 @@ public class Resident extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String keycloakUserId;
 
+    @Column(length = 9, unique = true, nullable = false)
+    @Pattern(
+            regexp = "^[VE]\\\\d{8}$",
+            message = "Document must start with V or E followed by 8 digits"
+    )
+    private String document;
+
     // Attributes
     @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "Invalid phone number")
     private String phoneNumber;
