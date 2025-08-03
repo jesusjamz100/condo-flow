@@ -41,15 +41,29 @@ condo-flow/
 ```bash
 git clone https://github.com/jesusjamz100/condo-flow.git
 ```
-2. Construye las imágenes:
+2. Crea un archivo `.env` con las variables de entorno necesarias. Puedes hacerlo manualmente o copiando el archivo de ejemplo:
+```bash
+cp .env.example .env
+```
+3. Abre el archivo `.env` y configura tus variables:
+```dotenv
+POSTGRES_USER=tu_usuario
+POSTGRES_PASSWORD=tu_contraseña
+POSTGRES_DB=nombre_de_tu_db
+KEYCLOAK_ADMIN=admin
+KEYCLOAK_ADMIN_PASSWORD=admin
+```
+> 💡 El archivo .env.example ya está incluido en el proyecto como referencia. No lo edites directamente.
+4. Construye las imágenes:
 ```bash
 docker-compose build
 ```
-3. Levanta todos los servicios:
+5. Levanta todos los servicios:
 ```bash
 docker-compose up
 ```
-4. Accede a los servicios: \
+> ✅ ¡Listo! La aplicación debería estar corriendo en tu entorno local con Docker.
+6. Accede a los servicios: \
 | Servicio | URL |
 | ------------- | ------------- |
 | Config Server | http://localhost:8888 |
