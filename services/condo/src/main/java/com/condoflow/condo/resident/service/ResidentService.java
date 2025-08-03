@@ -16,5 +16,6 @@ public interface ResidentService {
     ResidentResponse findResidentByDocument(String document);
     Integer createResident(ResidentRequest request);
     void updateKeycloakUserId(Integer residentId, String keycloakUserId);
+    void updateDocument(Integer residentId, String document);
     void deleteResidentById(Integer residentId);
 }

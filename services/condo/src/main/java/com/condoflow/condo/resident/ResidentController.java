@@ -71,6 +71,15 @@ public class ResidentController {
         return ResponseEntity.ok(service.createResident(request));
     }
 
+    @PatchMapping("/admin/updateDocument/{residentId}/{document}")
+    public ResponseEntity<Void> updateDocument(
+            @PathVariable("residentId") Integer residentId,
+            @PathVariable("document") String document
+    ) {
+        service.updateDocument(residentId, document);
+        return ResponseEntity.accepted().build();
+    }
+
     @PatchMapping("/admin/updateKeycloakUserId/{residentId}/{keycloakUserId}")
     public ResponseEntity<Void> updateKeycloakUserId(
             @PathVariable("residentId") Integer residentId,

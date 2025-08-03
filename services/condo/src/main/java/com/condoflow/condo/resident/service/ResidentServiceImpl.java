@@ -1,6 +1,7 @@
 package com.condoflow.condo.resident.service;
 
 import com.condoflow.condo.common.PageResponse;
+import com.condoflow.condo.exception.DocumentAlreadyUsedException;
 import com.condoflow.condo.exception.ResidentAlreadyExistsException;
 import com.condoflow.condo.exception.ResidentNotFoundException;
 import com.condoflow.condo.resident.Resident;
@@ -97,8 +98,10 @@ public class ResidentServiceImpl implements ResidentService {
 
     @Override
     public Integer createResident(ResidentRequest request) {
-        if (repository.findById(request.id()).isEmpty())
-            throw new ResidentNotFoundException("Resident not found with ID:: " + request.id());
+        if (repository.existsByKeycloakUserId(request.keycloakUserId()))
+            throw new ResidentAlreadyExistsException("Resident already exists with Keycloak User ID:: " + request.keycloakUserId());
+        if (repository.existsByDocument(request.document()))
+            throw new DocumentAlreadyUsedException("Resident already exists with document:: " + request.document());
         Resident newResident = mapper.toResident(request);
         return repository.save(newResident).getId();
     }
@@ -107,7 +110,19 @@ public class ResidentServiceImpl implements ResidentService {
     public void updateKeycloakUserId(Integer residentId, String keycloakUserId) {
         Resident resident = repository.findById(residentId)
                 .orElseThrow(() -> new ResidentNotFoundException("Resident not found with ID:: " + residentId));
+        if (repository.existsByKeycloakUserId(keycloakUserId))
+            throw new ResidentAlreadyExistsException("Resident already exists with Keycloak User ID:: " + keycloakUserId);
         resident.setKeycloakUserId(keycloakUserId);
+        repository.save(resident);
+    }
+
+    @Override
+    public void updateDocument(Integer residentId, String document) {
+        Resident resident = repository.findById(residentId)
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with ID:: " + residentId));
+        if (repository.existsByDocument(document))
+            throw new DocumentAlreadyUsedException("Resident already exists with document:: " + document);
+        resident.setDocument(document);
         repository.save(resident);
     }
 

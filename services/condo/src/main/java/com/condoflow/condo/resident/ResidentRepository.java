@@ -11,7 +11,11 @@ import java.util.Optional;
 public interface ResidentRepository extends JpaRepository<Resident, Integer> {
     Optional<Resident> findByKeycloakUserId(String keycloakId);
 
+    boolean existsByKeycloakUserId(String keycloakUserId);
+
     Page<Resident> findByApartmentResidentsApartmentId(int apartmentId, Pageable pageable);
 
     Optional<Resident> findByDocument(String document);
+
+    boolean existsByDocument(String document);
 }
