@@ -14,6 +14,7 @@ public record ResidentProfileResponse(
         String firstName,
         String lastName,
         // RESIDENT EXTRA DATA
+        String document,
         String phoneNumber,
         String emergencyContactName,
         String emergencyContactPhone,

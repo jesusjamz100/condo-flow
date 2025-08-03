@@ -9,6 +9,7 @@ public record ResidentResponse(
         Integer id,
         String keycloakUserId,
         // RESIDENT EXTRA DATA
+        String document,
         String phoneNumber,
         String emergencyContactName,
         String emergencyContactPhone,

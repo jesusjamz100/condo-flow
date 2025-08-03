@@ -13,7 +13,9 @@ public interface ResidentService {
     PageResponse<ResidentResponse> findAllUsers(int page, int size);
     ResidentResponse findResidentById(Integer residentId);
     ResidentResponse findResidentByKeycloakUserId(String keycloakUserId);
+    ResidentResponse findResidentByDocument(String document);
     Integer createResident(ResidentRequest request);
     void updateKeycloakUserId(Integer residentId, String keycloakUserId);
+    void updateDocument(Integer residentId, String document);
     void deleteResidentById(Integer residentId);
 }

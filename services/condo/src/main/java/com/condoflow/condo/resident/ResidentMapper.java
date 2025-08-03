@@ -22,6 +22,7 @@ public class ResidentMapper {
                 jwt.getClaim("email"),
                 jwt.getClaim("given_name"),
                 jwt.getClaim("family_name"),
+                resident.getDocument(),
                 resident.getPhoneNumber(),
                 resident.getEmergencyContactName(),
                 resident.getEmergencyContactPhone(),
@@ -35,6 +36,7 @@ public class ResidentMapper {
         return new ResidentResponse(
                 resident.getId(),
                 resident.getKeycloakUserId(),
+                resident.getDocument(),
                 resident.getPhoneNumber(),
                 resident.getEmergencyContactName(),
                 resident.getEmergencyContactPhone(),
@@ -47,6 +49,7 @@ public class ResidentMapper {
     public Resident toResident(ResidentRequest request) {
         return Resident.builder()
                 .keycloakUserId(request.keycloakUserId())
+                .document(request.document())
                 .emergencyContactName(request.emergencyContactName())
                 .emergencyContactPhone(request.emergencyContactPhone())
                 .phoneNumber(request.phoneNumber()).build();

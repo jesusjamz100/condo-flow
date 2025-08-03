@@ -57,11 +57,27 @@ public class ResidentController {
         return ResponseEntity.ok(service.findResidentByKeycloakUserId(keycloakUserId));
     }
 
+    @GetMapping("/admin/findResidentByDocument/{document}")
+    public ResponseEntity<ResidentResponse> findResidentByDocument(
+            @PathVariable("document") String document
+    ) {
+        return ResponseEntity.ok(service.findResidentByDocument(document));
+    }
+
     @PostMapping("/admin/createResident")
     public ResponseEntity<Integer> createResident(
             @RequestBody @Valid ResidentRequest request
     ) {
         return ResponseEntity.ok(service.createResident(request));
+    }
+
+    @PatchMapping("/admin/updateDocument/{residentId}/{document}")
+    public ResponseEntity<Void> updateDocument(
+            @PathVariable("residentId") Integer residentId,
+            @PathVariable("document") String document
+    ) {
+        service.updateDocument(residentId, document);
+        return ResponseEntity.accepted().build();
     }
 
     @PatchMapping("/admin/updateKeycloakUserId/{residentId}/{keycloakUserId}")
