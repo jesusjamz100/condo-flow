@@ -89,6 +89,13 @@ public class ResidentServiceImpl implements ResidentService {
     }
 
     @Override
+    public ResidentResponse findResidentByDocument(String document) {
+        Resident resident = repository.findByDocument(document)
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with document:: " + document));
+        return mapper.toResidentResponse(resident);
+    }
+
+    @Override
     public Integer createResident(ResidentRequest request) {
         if (repository.findById(request.id()).isEmpty())
             throw new ResidentNotFoundException("Resident not found with ID:: " + request.id());

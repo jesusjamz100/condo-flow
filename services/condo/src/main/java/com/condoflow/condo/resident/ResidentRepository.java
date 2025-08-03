@@ -12,4 +12,6 @@ public interface ResidentRepository extends JpaRepository<Resident, Integer> {
     Optional<Resident> findByKeycloakUserId(String keycloakId);
 
     Page<Resident> findByApartmentResidentsApartmentId(int apartmentId, Pageable pageable);
+
+    Optional<Resident> findByDocument(String document);
 }

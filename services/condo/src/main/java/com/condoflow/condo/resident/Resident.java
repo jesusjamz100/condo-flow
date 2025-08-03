@@ -24,7 +24,7 @@ public class Resident extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String keycloakUserId;
 
-    @Column(length = 9, unique = true, nullable = false)
+    @Column(length = 9, unique = true)
     @Pattern(
             regexp = "^[VE]\\\\d{8}$",
             message = "Document must start with V or E followed by 8 digits"

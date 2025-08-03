@@ -57,6 +57,13 @@ public class ResidentController {
         return ResponseEntity.ok(service.findResidentByKeycloakUserId(keycloakUserId));
     }
 
+    @GetMapping("/admin/findResidentByDocument/{document}")
+    public ResponseEntity<ResidentResponse> findResidentByDocument(
+            @PathVariable("document") String document
+    ) {
+        return ResponseEntity.ok(service.findResidentByDocument(document));
+    }
+
     @PostMapping("/admin/createResident")
     public ResponseEntity<Integer> createResident(
             @RequestBody @Valid ResidentRequest request
