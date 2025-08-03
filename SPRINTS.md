@@ -1,133 +1,131 @@
 # 📅 CondoFlow – Planificación por Sprints (Scrum)
 
 ## 🏁 Objetivo general
-Finalizar y entregar una aplicación backend distribuida por microservicios para la gestión completa de un condominio antes del 30 de agosto, utilizando Spring Boot, OAuth2, PostgreSQL y Docker.
+Finalizar y entregar una aplicación backend distribuida por microservicios para la gestión completa de un condominio antes del 10 de septiembre, utilizando Spring Boot, Keycloak, PostgreSQL, Kafka y Docker.
 
 ---
 
 ## ⚙️ Sprint 0: Configuración inicial (Jun 15 – Jun 28)
 
 ### 🎯 Objetivos
-- Crear la base del sistema de microservicios.
-- Montar el entorno de desarrollo completo con Docker.
-- Implementar los primeros servicios fundamentales: usuario, configuración centralizada y descubrimiento.
+- Montar el entorno completo de microservicios.
+- Configurar los servicios fundamentales y la infraestructura base.
 
 ### ✅ Tareas realizadas
 - [x] Crear `config-server` para configuración centralizada
 - [x] Crear `eureka-server` para descubrimiento de servicios
-- [x] Crear `user-service` con endpoints de registro y gestión de usuarios
-- [x] Dockerizar los servicios anteriores
+- [x] Crear `gateway-service` con filtros de seguridad y autenticación vía Keycloak
+- [x] Integrar seguridad OAuth2 con Keycloak (sin auth-service propio)
 - [x] Crear y configurar contenedores en `docker-compose` para:
-    - PostgreSQL
-    - Redis
-    - Kafka + Zookeeper
-- [x] Integrar todos los servicios al ecosistema Eureka
-- [x] Probar conexión entre servicios vía `docker-compose`
+  - PostgreSQL
+  - Kafka + Zookeeper
+  - Keycloak
+- [x] Probar conexión entre servicios con Eureka y Gateway
 
 ---
 
-## 🚀 Sprint 1: Seguridad y Autenticación (Jun 29 – Jul 12)
+## 🧱 Sprint 1: Residentes y gestión inicial (Jun 29 – Jul 12)
 
 ### 🎯 Objetivos
-- Configurar seguridad OAuth2 para autenticación.
-- Crear `auth-service` y configurar flujo OAuth2 completo.
-- Proteger microservicios mediante Resource Server (ya avanzado en `user-service`).
-- Filtrar y enrutar tráfico con `gateway-service`.
-- Iniciar documentación en Swagger.
+- Iniciar el desarrollo de `condo-service`
+- Conectar usuarios Keycloak con perfiles extendidos de residentes
+- CRUD de residentes
 
 ### 📋 Historias de usuario
-- Como **usuario**, quiero iniciar sesión con mi correo y contraseña para acceder al sistema.
-- Como **administrador**, quiero asegurar que cada usuario solo tenga una sesión activa (Redis).
+- Como **administrador**, quiero crear, editar y eliminar residentes del condominio.
+- Como **residente**, quiero que mi perfil esté vinculado a mi usuario Keycloak.
 
 ### ✅ Tareas
-- [ ] Crear `auth-service` con soporte OAuth2 (password grant o token personalizado)
-- [ ] Conectar `auth-service` con `user-service` para autenticación
-- [ ] Configurar Redis para sesión única por usuario
-- [ ] Configurar `gateway-service` como API Gateway + filtros de seguridad JWT
-- [ ] Definir roles básicos: `ADMIN`, `RESIDENT`, `STAFF`
-- [ ] Swagger: auth + user-service
+- [x] Crear modelo de `Residente` con vínculo a usuarios Keycloak
+- [x] Implementar endpoints CRUD para residentes
+- [ ] Implementar pruebas unitarias de residentes
+- [ ] Documentar en Swagger
 
 ---
 
-## 🧱 Sprint 2: Gestión de Condominios (Jul 13 – Jul 26)
+## 🏢 Sprint 2: Gestión de Torres y Apartamentos (Jul 13 – Jul 26)
 
 ### 🎯 Objetivos
-- Crear el `condo-service` para representar torres, apartamentos y alícuotas.
-- Asociar apartamentos a usuarios.
-- Normalizar la estructura de edificios (torres, pisos, apartamentos).
-- Calcular la alícuota como % de participación del gasto total.
+- Modelar la estructura física del condominio (torres, pisos y apartamentos)
+- Asignar residentes a apartamentos
+- Calcular y almacenar alícuotas por apartamento
 
 ### 📋 Historias de usuario
-- Como **administrador**, quiero registrar todos los apartamentos del condominio para asignar propietarios.
-- Como **usuario**, quiero ver a qué torre y apartamento pertenezco.
+- Como **administrador**, quiero definir la estructura del condominio (torres, pisos, apartamentos).
+- Como **administrador**, quiero asignar y desasignar residentes a apartamentos.
 - Como **administrador**, quiero definir la alícuota de cada apartamento.
 
 ### ✅ Tareas
-- [ ] Crear modelo de dominio: Torre, Apartamento, Alicuota
-- [ ] Precargar la estructura: Torres A-D, 16 pisos, apartamentos 1-1 hasta 16-2
-- [ ] Asociar usuarios a apartamentos
-- [ ] Endpoint: GET torre/apartamentos, POST apartamento/asignar-usuario
-- [ ] Swagger: condo-service
+- [ ] Modelo: Torre, Apartamento, Alicuota
+- [ ] Precargar estructura A–D, 16 pisos, 4 aptos por piso (excepto PH)
+- [ ] CRUD de apartamentos
+- [ ] Asociar y desasociar residentes desde los apartamentos
+- [ ] Endpoint: GET torre/apartamentos, POST apartamento/asignar-residente
+- [ ] Documentar en Swagger
 
 ---
 
 ## 💰 Sprint 3: Pagos y Gastos Comunes (Jul 27 – Aug 9)
 
 ### 🎯 Objetivos
-- Implementar lógica de pagos mensuales (`payment-service`) y gastos comunes (`expense-service`)
-- Aplicar reglas de descuento y multa según fecha de pago
-- Registrar pagos de servicios externos (mantenimiento, luz, etc.)
-- Distribuir gastos según alícuota por torre y apartamento
+- Implementar `payment-service` y `expense-service`
+- Aplicar lógica de descuentos y multas en pagos
+- Registrar gastos generales o específicos por torre
+- Distribuir gastos según alícuota
 
 ### 📋 Historias de usuario
-- Como **usuario**, quiero ver mi deuda mensual y poder pagarla.
-- Como **usuario**, quiero obtener un descuento si pago a tiempo.
-- Como **administrador**, quiero registrar gastos como mantenimiento o conserjes.
-- Como **administrador**, quiero que los gastos por torre solo se apliquen a sus residentes.
+- Como **residente**, quiero ver mis pagos pendientes y realizarlos.
+- Como **residente**, quiero obtener un descuento si pago antes del día 5 del mes.
+- Como **administrador**, quiero registrar gastos del condominio (mantenimiento, luz, etc.).
+- Como **administrador**, quiero que gastos por torre se asignen solo a esa torre.
 
 ### ✅ Tareas
+
 #### payment-service
-- [ ] Crear modelo: Pago, CuotaMensual
-- [ ] Lógica de cálculo con descuento (10% hasta día 5)
-- [ ] Lógica de multa (10% después del mes vencido)
+- [ ] Modelo: Pago, CuotaMensual
+- [ ] Descuento 10% si se paga antes del día 5
+- [ ] Multa 10% si no se paga antes de fin de mes
 - [ ] Endpoint: POST pago, GET estado de cuenta
 
 #### expense-service
-- [ ] Registrar gastos comunes generales o por torre
-- [ ] Calcular distribución por alícuota
+- [ ] Modelo: Gasto, GastoPorTorre
+- [ ] Registro de gasto general o por torre
+- [ ] Distribución proporcional según alícuota
 - [ ] Endpoint: POST gasto, GET gastos por usuario/torre
 
 ---
 
-## 📊 Sprint 4: Reportes, Integración y Deploy (Aug 10 – Aug 23)
+## 🔧 Sprint 4: Integración, pruebas y deploy (Aug 10 – Aug 23)
 
 ### 🎯 Objetivos
-- Generar reportes financieros por condominio, torre o apartamento
-- Integrar todos los microservicios y validarlos
-- Dockerizar todos los servicios
-- Preparar documentación y pruebas
+- Realizar pruebas de integración y validación entre microservicios
+- Preparar despliegue con Docker
+- Documentar sistema y endpoints
+- Lograr 80% del sistema completo y funcional para el 30 de agosto
 
 ### 📋 Historias de usuario
-- Como **administrador**, quiero generar un reporte de ingresos vs. gastos del mes actual.
-- Como **administrador**, quiero descargar el reporte en PDF/CSV.
-- Como **usuario**, quiero ver un historial de mis pagos.
+- Como **administrador**, quiero ver que todo el sistema funciona integrado.
+- Como **usuario**, quiero recibir respuestas claras del sistema ante errores o acciones.
 
 ### ✅ Tareas
-#### report-service
-- [ ] Generar reportes: resumen de pagos, deudas, gastos por torre
-- [ ] Exportar como PDF/CSV (opcional o simulado)
-- [ ] Endpoint: GET /report/monthly, /report/apt, /report/torre
-
-#### Integración & DevOps
-- [ ] Completar archivos `application.yml` centralizados en config-server
-- [ ] Dockerizar todos los servicios y agregar a `docker-compose`
-- [ ] Pruebas end-to-end con Postman o Swagger
+- [ ] Probar flujo completo: login → residentes → asignación → pago
+- [ ] Documentar todos los endpoints en Swagger
+- [ ] Dockerizar servicios faltantes y actualizar `docker-compose.yml`
+- [ ] Validación de seguridad con roles en Keycloak
+- [ ] Ajustes finales y revisión funcional
 
 ---
 
-## 🧹 Semana Final (Aug 24 – Aug 30)
-### 🧪 Tareas
-- [ ] Corrección de errores
-- [ ] Revisión de Swagger de todos los servicios
-- [ ] Validación funcional del sistema completo
-- [ ] Preparación para presentación final
+## 📦 Sprint 5: Entrega final y mejoras (Aug 24 – Sep 10)
+
+### 🎯 Objetivos
+- Corregir bugs y refinar la experiencia
+- Optimizar consultas y manejo de errores
+- Finalizar pruebas automatizadas y presentación
+
+### ✅ Tareas
+- [ ] Corregir errores encontrados en validaciones
+- [ ] Optimizar lógica de cálculo de pagos/gastos
+- [ ] Añadir pruebas unitarias e integración faltantes
+- [ ] Preparar presentación/documentación final
+- [ ] Verificar consistencia de roles y permisos en Keycloak

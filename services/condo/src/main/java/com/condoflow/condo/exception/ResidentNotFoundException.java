@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserNotFoundException extends RuntimeException {
+public class ResidentNotFoundException extends RuntimeException {
 
     private final String msg;
 }
