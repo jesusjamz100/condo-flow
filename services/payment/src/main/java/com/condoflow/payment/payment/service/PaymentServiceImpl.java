@@ -1,5 +1,7 @@
 package com.condoflow.payment.payment.service;
 
+import com.condoflow.payment.apartment.ApartmentClient;
+import com.condoflow.payment.apartment.ApartmentResponse;
 import com.condoflow.payment.common.PageResponse;
 import com.condoflow.payment.payment.Payment;
 import com.condoflow.payment.payment.PaymentMapper;
@@ -14,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository repository;
     private final PaymentMapper mapper;
     private final ResidentClient residentClient;
+    private final ApartmentClient apartmentClient;
 
     @Override
     public PageResponse<PaymentResponse> findMyPayments(int page, int size) {
@@ -49,11 +51,11 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentResponse findById(Integer paymentId) {
+    public PaymentResponse findMyPaymentById(Integer paymentId) {
         ResidentResponse resident = residentClient.getMe()
                 .orElseThrow(() -> new RuntimeException("Resident Not Found"));
         Payment payment = repository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Resident not found"));
+                .orElseThrow(() -> new RuntimeException("Payment not found with ID:: " + paymentId));
         if (resident.id() != payment.getResidentId())
             throw new AccessDeniedException("You don't have permissions to see this payment");
         return mapper.toPaymentResponse(payment);
@@ -63,6 +65,8 @@ public class PaymentServiceImpl implements PaymentService {
     public PageResponse<PaymentResponse> findMyPaymentsByApartment(Integer apartmentId, int page, int size) {
         ResidentResponse resident = residentClient.getMe()
                 .orElseThrow(() -> new RuntimeException("Resident Not Found"));
+        ApartmentResponse apartment = apartmentClient.findApartmentById(apartmentId)
+                .orElseThrow(() -> new RuntimeException("Apartment Not Found"));
         boolean hasRelation = resident.apartmentResidents().stream()
                 .anyMatch(ar ->
                         ar.apartmentId().equals(apartmentId) &&
@@ -102,5 +106,40 @@ public class PaymentServiceImpl implements PaymentService {
             throw new AccessDeniedException("No tienes permisos para consultar pagos de este apartamento");
         Payment payment = mapper.toPayment(request);
         repository.save(payment);
+    }
+
+    @Override
+    public PageResponse<PaymentResponse> findAllPayments(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Page<Payment> payments = repository.findAll(pageable);
+        List<PaymentResponse> paymentResponse = payments
+                .stream()
+                .map(mapper::toPaymentResponse)
+                .toList();
+        return new PageResponse<>(
+                paymentResponse,
+                payments.getNumber(),
+                payments.getSize(),
+                payments.getTotalElements(),
+                payments.getTotalPages(),
+                payments.isFirst(),
+                payments.isLast()
+        );
+    }
+
+    @Override
+    public PaymentResponse findById(Integer paymentId) {
+        Payment payment = repository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Payment not found with ID:: " + paymentId));
+        return mapper.toPaymentResponse(payment);
+    }
+
+    @Override
+    public void approvePayment(Integer paymentId) {
+        Payment payment = repository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Payment not found with ID:: " + paymentId));
+        if (payment.isApproved()) throw new RuntimeException("Payment is already approved");
+        payment.setApproved(true);
+        apartmentClient.updateBalanceFromPayment(payment.getApartmentId(), payment.getAmount());
     }
 }

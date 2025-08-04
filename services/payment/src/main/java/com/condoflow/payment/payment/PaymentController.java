@@ -8,8 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,7 +29,7 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> getMyPaymentById(
             @PathVariable("paymentId") Integer paymentId
     ) {
-        return ResponseEntity.ok(service.findById(paymentId));
+        return ResponseEntity.ok(service.findMyPaymentById(paymentId));
     }
 
     @GetMapping("/myPayments/findByApartment/{apartmentId}")
@@ -49,6 +47,30 @@ public class PaymentController {
     ) {
         service.registerPayment(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // ADMIN ROUTES
+    @GetMapping("/admin")
+    public ResponseEntity<PageResponse<PaymentResponse>> getAllPayments(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+    ) {
+        return ResponseEntity.ok(service.findAllPayments(page, size));
+    }
+
+    @GetMapping("/admin/{paymentId}")
+    public ResponseEntity<PaymentResponse> getPaymentById(
+            @PathVariable("paymentId") Integer paymentId
+    ) {
+        return ResponseEntity.ok(service.findById(paymentId));
+    }
+
+    @PatchMapping("/admin/approve/{paymentId}")
+    public ResponseEntity<Void> approvePayment(
+            @PathVariable("paymentId") Integer paymentId
+    ) {
+        service.approvePayment(paymentId);
+        return ResponseEntity.accepted().build();
     }
 
 }
