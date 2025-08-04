@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(("/payments"))
+@RequestMapping("/payments")
 public class PaymentController {
 
     private final PaymentService service;
