@@ -70,7 +70,7 @@ public class ApartmentController {
 
     @PatchMapping("/admin/{apartmentId}/updateBalanceFromPayment")
     public ResponseEntity<Void> updateBalanceFromPayment(
-            Integer apartmentId,
+            @PathVariable("apartmentId") Integer apartmentId,
             @RequestParam("paymentAmount") BigDecimal amount
     ) {
         service.updateBalanceFromPayment(apartmentId, amount);

@@ -20,6 +20,6 @@ public interface ApartmentClient {
     @GetMapping("/admin/findApartmentById/{apartmentId}")
     Optional<ApartmentResponse> findApartmentById(@PathVariable("apartmentId") int apartmentId);
 
-    @PatchMapping("/admin/updateBalanceFromPayment?paymentAmount={amount}")
-    void updateBalanceFromPayment(Integer apartmentId, @RequestParam("paymentAmount") BigDecimal amount);
+    @PatchMapping("/admin/{apartmentId}/updateBalanceFromPayment?paymentAmount={amount}")
+    void updateBalanceFromPayment(@PathVariable("apartmentId") Integer apartmentId, @RequestParam("paymentAmount") BigDecimal amount);
 }
