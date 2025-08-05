@@ -6,6 +6,8 @@ import com.condoflow.condo.common.PageResponse;
 import com.condoflow.condo.resident.dto.ResidentResponse;
 import org.springframework.security.oauth2.jwt.Jwt;
 
+import java.math.BigDecimal;
+
 public interface ApartmentService {
     PageResponse<ApartmentResponse> findMyApartments(Jwt jwt, int page, int size);
 
@@ -18,6 +20,8 @@ public interface ApartmentService {
     Integer createApartment(ApartmentRequest request);
 
     ApartmentResponse updateApartment(ApartmentRequest request);
+
+    void updateBalanceFromPayment(Integer apartmentId, BigDecimal amount);
 
     void deleteApartmentById(int apartmentId);
 
