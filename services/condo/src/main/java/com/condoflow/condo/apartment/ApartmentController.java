@@ -12,6 +12,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/condo")
@@ -64,6 +66,15 @@ public class ApartmentController {
             @RequestBody ApartmentRequest request
     ) {
         return ResponseEntity.ok(service.updateApartment(request));
+    }
+
+    @PatchMapping("/admin/{apartmentId}/updateBalanceFromPayment")
+    public ResponseEntity<Void> updateBalanceFromPayment(
+            Integer apartmentId,
+            @RequestParam("paymentAmount") BigDecimal amount
+    ) {
+        service.updateBalanceFromPayment(apartmentId, amount);
+        return ResponseEntity.accepted().build();
     }
 
     @DeleteMapping("/admin/deleteById/{apartmentId}")

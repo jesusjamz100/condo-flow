@@ -27,6 +27,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.List;
 import java.util.Objects;
 
@@ -111,6 +113,16 @@ public class ApartmentServiceImpl implements ApartmentService {
         mergeApartment(apartment, request);
         apartmentRepository.save(apartment);
         return apartmentMapper.toApartmentResponse(apartment);
+    }
+
+    @Override
+    public void updateBalanceFromPayment(Integer apartmentId, BigDecimal amount) {
+        Apartment apartment = apartmentRepository.findById(apartmentId)
+                .orElseThrow(() -> new ApartmentNotFoundException("Apartment not found with ID:: " + apartmentId));
+        apartment.setBalance(
+                apartment.getBalance().add(amount).round(new MathContext(3))
+        );
+        apartmentRepository.save(apartment);
     }
 
     @Override
