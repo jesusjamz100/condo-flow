@@ -6,6 +6,7 @@ import com.condoflow.payment.common.PageResponse;
 import com.condoflow.payment.payment.Payment;
 import com.condoflow.payment.payment.PaymentMapper;
 import com.condoflow.payment.payment.PaymentRepository;
+import com.condoflow.payment.payment.PaymentType;
 import com.condoflow.payment.payment.dto.PaymentRequest;
 import com.condoflow.payment.payment.dto.PaymentResponse;
 import com.condoflow.payment.resident.ResidentClient;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -30,11 +32,18 @@ public class PaymentServiceImpl implements PaymentService {
     private final ApartmentClient apartmentClient;
 
     @Override
-    public PageResponse<PaymentResponse> findMyPayments(int page, int size) {
+    public PageResponse<PaymentResponse> findMyPayments(int page, int size, PaymentType type) {
         ResidentResponse resident = residentClient.getMe()
                 .orElseThrow(() -> new RuntimeException("Resident not found"));
+
+        Specification<Payment> spec = Specification
+                .allOf(
+                        byResidentId(resident.id()),
+                        type != null ? byPaymentType(type) : null
+                );
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Payment> payments = repository.findByResidentId(resident.id(), pageable);
+        Page<Payment> payments = repository.findAll(spec, pageable);
         List<PaymentResponse> paymentResponse = payments
                 .stream()
                 .map(mapper::toPaymentResponse)
@@ -62,7 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PageResponse<PaymentResponse> findMyPaymentsByApartment(Integer apartmentId, int page, int size) {
+    public PageResponse<PaymentResponse> findMyPaymentsByApartment(Integer apartmentId, int page, int size, PaymentType type) {
         ResidentResponse resident = residentClient.getMe()
                 .orElseThrow(() -> new RuntimeException("Resident Not Found"));
         ApartmentResponse apartment = apartmentClient.findApartmentById(apartmentId)
@@ -73,10 +82,16 @@ public class PaymentServiceImpl implements PaymentService {
                         ar.residentId().equals(resident.id())
                 );
         if (!hasRelation)
-            throw new AccessDeniedException("No tienes permisos para consultar pagos de este apartamento");
+            throw new AccessDeniedException("You can't access payments of this apartment");
+
+        Specification<Payment> spec = Specification
+                .allOf(
+                        byApartmentId(apartmentId),
+                        type != null ? byPaymentType(type) : null
+                );
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Payment> payments = repository.findByApartmentId(apartmentId, pageable);
+        Page<Payment> payments = repository.findAll(spec, pageable);
         List<PaymentResponse> paymentResponse = payments
                 .stream()
                 .map(mapper::toPaymentResponse)
@@ -103,15 +118,27 @@ public class PaymentServiceImpl implements PaymentService {
                                 ar.residentId().equals(resident.id())
                 );
         if (!hasRelation)
-            throw new AccessDeniedException("No tienes permisos para consultar pagos de este apartamento");
+            throw new AccessDeniedException("You can't access payments of this apartment");
+        if (
+                request.type().equals(PaymentType.WIRE) &&
+                        request.reference().isEmpty()
+        ) {
+            throw new RuntimeException("Wire payments should include a reference");
+        }
         Payment payment = mapper.toPayment(request);
         repository.save(payment);
     }
 
     @Override
-    public PageResponse<PaymentResponse> findAllPayments(int page, int size) {
+    public PageResponse<PaymentResponse> findAllPayments(int page, int size, PaymentType type) {
+
+        Specification<Payment> spec = Specification
+                .allOf(
+                        type != null ? byPaymentType(type) : null
+                );
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Payment> payments = repository.findAll(pageable);
+        Page<Payment> payments = repository.findAll(spec, pageable);
         List<PaymentResponse> paymentResponse = payments
                 .stream()
                 .map(mapper::toPaymentResponse)
@@ -142,5 +169,17 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setApproved(true);
         apartmentClient.updateBalanceFromPayment(payment.getApartmentId(), payment.getAmount());
         repository.save(payment);
+    }
+
+    Specification<Payment> byApartmentId(Integer apartmentId) {
+        return (root, query, cb) -> cb.equal(root.get("apartmentId"), apartmentId);
+    }
+
+    Specification<Payment> byResidentId(Integer residentId) {
+        return (root, query, cb) -> cb.equal(root.get("residentId"), residentId);
+    }
+
+    Specification<Payment> byPaymentType(PaymentType type) {
+        return (root, query, cb) -> cb.equal(root.get("type"), type);
     }
 }

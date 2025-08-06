@@ -20,9 +20,10 @@ public class PaymentController {
     @GetMapping("/myPayments")
     public ResponseEntity<PageResponse<PaymentResponse>> getAllMyPayments(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            @RequestParam(name = "type", required = false) PaymentType type
     ) {
-        return ResponseEntity.ok(service.findMyPayments(page, size));
+        return ResponseEntity.ok(service.findMyPayments(page, size, type));
     }
 
     @GetMapping("/myPayments/{paymentId}")
@@ -36,9 +37,10 @@ public class PaymentController {
     public ResponseEntity<PageResponse<PaymentResponse>> getMyPaymentsByApartment(
             @PathVariable("apartmentId") Integer apartmentId,
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            @RequestParam(name = "type", required = false) PaymentType type
     ) {
-        return ResponseEntity.ok(service.findMyPaymentsByApartment(apartmentId, page, size));
+        return ResponseEntity.ok(service.findMyPaymentsByApartment(apartmentId, page, size, type));
     }
 
     @PostMapping("/myPayments/register")
@@ -53,9 +55,10 @@ public class PaymentController {
     @GetMapping("/admin")
     public ResponseEntity<PageResponse<PaymentResponse>> getAllPayments(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            @RequestParam(name = "type", required = false) PaymentType type
     ) {
-        return ResponseEntity.ok(service.findAllPayments(page, size));
+        return ResponseEntity.ok(service.findAllPayments(page, size, type));
     }
 
     @GetMapping("/admin/{paymentId}")
