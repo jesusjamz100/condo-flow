@@ -1,5 +1,6 @@
 package com.condoflow.payment.payment.dto;
 
+import com.condoflow.payment.payment.PaymentType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -11,6 +12,9 @@ public record PaymentRequest(
         @NotNull
         @Positive
         BigDecimal amount,
+        @NotNull
+        PaymentType type,
+        String reference,
         @NotBlank
         @NotNull
         String description,

@@ -6,6 +6,7 @@ import com.condoflow.payment.common.PageResponse;
 import com.condoflow.payment.payment.Payment;
 import com.condoflow.payment.payment.PaymentMapper;
 import com.condoflow.payment.payment.PaymentRepository;
+import com.condoflow.payment.payment.PaymentType;
 import com.condoflow.payment.payment.dto.PaymentRequest;
 import com.condoflow.payment.payment.dto.PaymentResponse;
 import com.condoflow.payment.resident.ResidentClient;
@@ -73,7 +74,7 @@ public class PaymentServiceImpl implements PaymentService {
                         ar.residentId().equals(resident.id())
                 );
         if (!hasRelation)
-            throw new AccessDeniedException("No tienes permisos para consultar pagos de este apartamento");
+            throw new AccessDeniedException("You can't access payments of this apartment");
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Payment> payments = repository.findByApartmentId(apartmentId, pageable);
@@ -103,7 +104,13 @@ public class PaymentServiceImpl implements PaymentService {
                                 ar.residentId().equals(resident.id())
                 );
         if (!hasRelation)
-            throw new AccessDeniedException("No tienes permisos para consultar pagos de este apartamento");
+            throw new AccessDeniedException("You can't access payments of this apartment");
+        if (
+                request.type().equals(PaymentType.WIRE) &&
+                        request.reference().isEmpty()
+        ) {
+            throw new RuntimeException("Wire payments should include a reference");
+        }
         Payment payment = mapper.toPayment(request);
         repository.save(payment);
     }
