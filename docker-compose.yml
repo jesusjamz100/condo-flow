@@ -177,6 +177,32 @@ services:
     networks:
       - condo-net
 
+  # 9) Payment Service
+  payment-service:
+    build:
+      context: ./services/payment
+    image: payment-service
+    container_name: payment-service
+    ports:
+      - "8084:8084"
+    environment:
+      # Pasamos las mismas vars de Postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/paymentdb
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+
+      # Kafka
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      config-server:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - condo-net
+
 networks:
   condo-net:
     driver: bridge

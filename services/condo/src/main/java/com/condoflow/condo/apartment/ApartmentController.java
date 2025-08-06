@@ -12,9 +12,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/condo")
+@RequestMapping("/apartments")
 public class ApartmentController {
 
     private final ApartmentService service;
@@ -64,6 +66,15 @@ public class ApartmentController {
             @RequestBody ApartmentRequest request
     ) {
         return ResponseEntity.ok(service.updateApartment(request));
+    }
+
+    @PutMapping("/admin/{apartmentId}/updateBalanceFromPayment")
+    public ResponseEntity<Void> updateBalanceFromPayment(
+            @PathVariable("apartmentId") Integer apartmentId,
+            @RequestParam(name = "paymentAmount") BigDecimal amount
+    ) {
+        service.updateBalanceFromPayment(apartmentId, amount);
+        return ResponseEntity.accepted().build();
     }
 
     @DeleteMapping("/admin/deleteById/{apartmentId}")

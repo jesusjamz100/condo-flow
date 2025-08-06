@@ -16,7 +16,11 @@ spring:
         - id: condo
           uri: lb://CONDO-SERVICE
           predicates:
-            - Path=/residents,/residents/**,/condo,/condo/**
+            - Path=/residents,/residents/**,/apartments,/apartments/**
+        - id: payment
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payments,/payments/**
 
   security:
     oauth2:
