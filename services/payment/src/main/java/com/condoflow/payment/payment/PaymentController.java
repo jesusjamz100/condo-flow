@@ -20,9 +20,10 @@ public class PaymentController {
     @GetMapping("/myPayments")
     public ResponseEntity<PageResponse<PaymentResponse>> getAllMyPayments(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            @RequestParam(name = "type", required = false) PaymentType type
     ) {
-        return ResponseEntity.ok(service.findMyPayments(page, size));
+        return ResponseEntity.ok(service.findMyPayments(page, size, type));
     }
 
     @GetMapping("/myPayments/{paymentId}")

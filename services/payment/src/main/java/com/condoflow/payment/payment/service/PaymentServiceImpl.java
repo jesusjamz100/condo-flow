@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -31,11 +32,18 @@ public class PaymentServiceImpl implements PaymentService {
     private final ApartmentClient apartmentClient;
 
     @Override
-    public PageResponse<PaymentResponse> findMyPayments(int page, int size) {
+    public PageResponse<PaymentResponse> findMyPayments(int page, int size, PaymentType type) {
         ResidentResponse resident = residentClient.getMe()
                 .orElseThrow(() -> new RuntimeException("Resident not found"));
+
+        Specification<Payment> spec = Specification
+                .allOf(
+                        byResidentId(resident.id()),
+                        type != null ? byPaymentType(type) : null
+                );
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Payment> payments = repository.findByResidentId(resident.id(), pageable);
+        Page<Payment> payments = repository.findAll(spec, pageable);
         List<PaymentResponse> paymentResponse = payments
                 .stream()
                 .map(mapper::toPaymentResponse)
@@ -149,5 +157,13 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setApproved(true);
         apartmentClient.updateBalanceFromPayment(payment.getApartmentId(), payment.getAmount());
         repository.save(payment);
+    }
+
+    Specification<Payment> byResidentId(Integer residentId) {
+        return (root, query, cb) -> cb.equal(root.get("residentId"), residentId);
+    }
+
+    Specification<Payment> byPaymentType(PaymentType type) {
+        return (root, query, cb) -> cb.equal(root.get("type"), type);
     }
 }
