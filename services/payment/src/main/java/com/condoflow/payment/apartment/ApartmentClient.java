@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @FeignClient(
         name = "apartment-client",
-        url = "http://gateway-service:8222/condo",
+        url = "${application.config.apartment-url}",
         configuration = FeignClientConfig.class
 )
 public interface ApartmentClient {
