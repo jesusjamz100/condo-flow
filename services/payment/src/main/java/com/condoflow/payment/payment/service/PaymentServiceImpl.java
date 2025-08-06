@@ -71,7 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PageResponse<PaymentResponse> findMyPaymentsByApartment(Integer apartmentId, int page, int size) {
+    public PageResponse<PaymentResponse> findMyPaymentsByApartment(Integer apartmentId, int page, int size, PaymentType type) {
         ResidentResponse resident = residentClient.getMe()
                 .orElseThrow(() -> new RuntimeException("Resident Not Found"));
         ApartmentResponse apartment = apartmentClient.findApartmentById(apartmentId)
@@ -84,8 +84,14 @@ public class PaymentServiceImpl implements PaymentService {
         if (!hasRelation)
             throw new AccessDeniedException("You can't access payments of this apartment");
 
+        Specification<Payment> spec = Specification
+                .allOf(
+                        byApartmentId(apartmentId),
+                        type != null ? byPaymentType(type) : null
+                );
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Payment> payments = repository.findByApartmentId(apartmentId, pageable);
+        Page<Payment> payments = repository.findAll(spec, pageable);
         List<PaymentResponse> paymentResponse = payments
                 .stream()
                 .map(mapper::toPaymentResponse)
@@ -124,9 +130,15 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PageResponse<PaymentResponse> findAllPayments(int page, int size) {
+    public PageResponse<PaymentResponse> findAllPayments(int page, int size, PaymentType type) {
+
+        Specification<Payment> spec = Specification
+                .allOf(
+                        type != null ? byPaymentType(type) : null
+                );
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Payment> payments = repository.findAll(pageable);
+        Page<Payment> payments = repository.findAll(spec, pageable);
         List<PaymentResponse> paymentResponse = payments
                 .stream()
                 .map(mapper::toPaymentResponse)
@@ -157,6 +169,10 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setApproved(true);
         apartmentClient.updateBalanceFromPayment(payment.getApartmentId(), payment.getAmount());
         repository.save(payment);
+    }
+
+    Specification<Payment> byApartmentId(Integer apartmentId) {
+        return (root, query, cb) -> cb.equal(root.get("apartmentId"), apartmentId);
     }
 
     Specification<Payment> byResidentId(Integer residentId) {

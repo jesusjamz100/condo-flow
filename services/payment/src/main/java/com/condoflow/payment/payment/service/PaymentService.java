@@ -10,11 +10,11 @@ public interface PaymentService {
 
     PaymentResponse findMyPaymentById(Integer paymentId);
 
-    PageResponse<PaymentResponse> findMyPaymentsByApartment(Integer apartmentId, int page, int size);
+    PageResponse<PaymentResponse> findMyPaymentsByApartment(Integer apartmentId, int page, int size, PaymentType type);
 
     void registerPayment(PaymentRequest request);
 
-    PageResponse<PaymentResponse> findAllPayments(int page, int size);
+    PageResponse<PaymentResponse> findAllPayments(int page, int size, PaymentType type);
 
     PaymentResponse findById(Integer paymentId);
 
