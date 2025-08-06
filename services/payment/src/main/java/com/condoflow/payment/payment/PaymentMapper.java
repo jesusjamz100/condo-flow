@@ -24,6 +24,7 @@ public class PaymentMapper {
         return Payment.builder()
                 .amount(request.amount())
                 .description(request.description())
+                .type(request.type())
                 .apartmentId(request.apartmentId())
                 .residentId(request.residentId())
                 .build();
