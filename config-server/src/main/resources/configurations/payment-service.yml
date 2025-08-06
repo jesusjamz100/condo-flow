@@ -18,5 +18,10 @@ spring:
           issuer-uri: http://localhost:8080/realms/condoflow
           jwk-set-uri: http://keycloak:8080/realms/condoflow/protocol/openid-connect/certs
 
+application:
+  config:
+    apartment-url: http://gateway-service:8222/apartments
+    resident-url: http://gateway-service:8222/residents
+
 server:
   port: 8084
