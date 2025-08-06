@@ -68,10 +68,10 @@ public class ApartmentController {
         return ResponseEntity.ok(service.updateApartment(request));
     }
 
-    @PatchMapping("/admin/{apartmentId}/updateBalanceFromPayment")
+    @PutMapping("/admin/{apartmentId}/updateBalanceFromPayment")
     public ResponseEntity<Void> updateBalanceFromPayment(
-            Integer apartmentId,
-            @RequestParam("paymentAmount") BigDecimal amount
+            @PathVariable("apartmentId") Integer apartmentId,
+            @RequestParam(name = "paymentAmount") BigDecimal amount
     ) {
         service.updateBalanceFromPayment(apartmentId, amount);
         return ResponseEntity.accepted().build();

@@ -63,7 +63,8 @@ docker-compose build
 docker-compose up
 ```
 > ✅ ¡Listo! La aplicación debería estar corriendo en tu entorno local con Docker.
-6. Accede a los servicios: \
+6. Accede a los servicios:
+
 | Servicio | URL |
 | ------------- | ------------- |
 | Config Server | http://localhost:8888 |

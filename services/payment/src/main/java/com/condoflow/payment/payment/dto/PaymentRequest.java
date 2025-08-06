@@ -15,11 +15,9 @@ public record PaymentRequest(
         @NotNull
         String description,
         @NotNull
-        @NotBlank
         @Positive
         Integer apartmentId,
         @NotNull
-        @NotBlank
         @Positive
         Integer residentId
 ) {
