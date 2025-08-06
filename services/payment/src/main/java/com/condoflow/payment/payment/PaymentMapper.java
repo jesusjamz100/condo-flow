@@ -21,7 +21,6 @@ public class PaymentMapper {
 
     public Payment toPayment(PaymentRequest request) {
         return Payment.builder()
-                .id(request.id())
                 .amount(request.amount())
                 .apartmentId(request.apartmentId())
                 .residentId(request.residentId())

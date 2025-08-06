@@ -141,5 +141,6 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment.isApproved()) throw new RuntimeException("Payment is already approved");
         payment.setApproved(true);
         apartmentClient.updateBalanceFromPayment(payment.getApartmentId(), payment.getAmount());
+        repository.save(payment);
     }
 }
