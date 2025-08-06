@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/condo")
+@RequestMapping("/apartments")
 public class ApartmentController {
 
     private final ApartmentService service;
