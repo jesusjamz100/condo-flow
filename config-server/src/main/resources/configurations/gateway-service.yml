@@ -21,6 +21,10 @@ spring:
           uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/payments,/payments/**
+        - id: expense
+          uri: lb://EXPENSE-SERVICE
+          predicates:
+            - Path=/expenses,expenses/**
 
   security:
     oauth2:
