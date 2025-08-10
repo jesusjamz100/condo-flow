@@ -11,6 +11,7 @@ public record ExpenseResponse(
         Integer id,
         String description,
         BigDecimal amount,
+        boolean billed,
         ScopeType scopeType,
         Set<Tower> applicableTowers,
         LocalDateTime createdDate,

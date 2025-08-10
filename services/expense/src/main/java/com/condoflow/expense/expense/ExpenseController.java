@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/expenses")
@@ -20,9 +22,11 @@ public class ExpenseController {
     @GetMapping("/admin")
     public ResponseEntity<PageResponse<ExpenseResponse>> getAllExpenses(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size
-    ) {
-        return ResponseEntity.ok(service.findAllExpenses(page, size));
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            @RequestParam(name = "startDate", required = false) LocalDate startDate,
+            @RequestParam(name = "endDate", required = false) LocalDate endDate
+            ) {
+        return ResponseEntity.ok(service.findAllExpenses(page, size, startDate, endDate));
     }
 
     @GetMapping("/admin/{expenseId}")

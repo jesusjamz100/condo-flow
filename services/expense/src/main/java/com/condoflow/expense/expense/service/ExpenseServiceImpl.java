@@ -10,9 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +27,17 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseMapper mapper;
 
     @Override
-    public PageResponse<ExpenseResponse> findAllExpenses(int page, int size) {
+    public PageResponse<ExpenseResponse> findAllExpenses(
+            int page, int size,
+            LocalDate startDate, LocalDate endDate
+    ) {
+
+        Specification<Expense> spec = Specification.allOf(
+                (startDate != null && endDate != null) ? byCreatedBetween(startDate, endDate) : null,
+                (startDate != null && endDate == null) ? byCreatedAfter(startDate) : null,
+                (startDate == null && endDate != null) ? byCreatedBefore(endDate) : null
+        );
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Expense> expenses = repository.findAll(pageable);
         List<ExpenseResponse> pageResponse = expenses
@@ -59,6 +71,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    @Transactional
     public ExpenseResponse updateExpense(ExpenseRequest request) {
         Expense expense = repository.findById(request.id())
                 .orElseThrow(() -> new ExpenseNotFoundException("Expense not found with with ID:: " + request.id()));
@@ -76,6 +89,16 @@ public class ExpenseServiceImpl implements ExpenseService {
     public void deleteExpenseById(Integer expenseId) {
         if (!repository.existsById(expenseId)) throw new ExpenseNotFoundException("Expense not found with with ID:: " + expenseId);
         repository.deleteById(expenseId);
+    }
+
+    @Override
+    @Transactional
+    public void makeExpenseBilled(Integer expenseId) {
+        Expense expense = repository.findById(expenseId)
+                .orElseThrow(() -> new ExpenseNotFoundException("Expense not found with with ID:: " + expenseId));
+        if (expense.isBilled()) throw new IllegalArgumentException("Expense already billed with ID:: " + expenseId);
+        expense.setBilled(true);
+        repository.save(expense);
     }
 
     private Set<Tower> normalizeApplicableTowers(ScopeType scopeType, Set<Tower> towers) {
@@ -101,5 +124,21 @@ public class ExpenseServiceImpl implements ExpenseService {
             }
             default -> throw new IllegalArgumentException("Scope not supported:: " + scopeType);
         }
+    }
+
+    public static Specification<Expense> byCreatedBetween(LocalDate startDate, LocalDate endDate) {
+        return (root, query, cb) -> cb.between(
+                root.get("createdDate"),
+                startDate.atStartOfDay(),
+                endDate.plusDays(1).atStartOfDay()
+        );
+    }
+
+    public static Specification<Expense> byCreatedAfter(LocalDate startDate) {
+        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get("createdDate"), startDate.atStartOfDay());
+    }
+
+    public static Specification<Expense> byCreatedBefore(LocalDate end) {
+        return (root, query, cb) -> cb.lessThan(root.get("createdDate"), end.plusDays(1).atStartOfDay());
     }
 }

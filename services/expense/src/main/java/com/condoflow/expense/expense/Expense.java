@@ -29,6 +29,9 @@ public class Expense {
     private String description;
     private BigDecimal amount;
 
+    @Builder.Default
+    private boolean billed = false;
+
     @Enumerated(EnumType.STRING)
     private ScopeType scopeType;
 

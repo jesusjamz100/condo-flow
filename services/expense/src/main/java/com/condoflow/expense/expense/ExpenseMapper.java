@@ -15,6 +15,7 @@ public class ExpenseMapper {
                 expense.getId(),
                 expense.getDescription(),
                 expense.getAmount(),
+                expense.isBilled(),
                 expense.getScopeType(),
                 expense.getApplicableTowers(),
                 expense.getCreatedDate(),
