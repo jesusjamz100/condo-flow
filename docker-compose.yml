@@ -229,31 +229,31 @@ services:
     networks:
       - condo-net
 
-    # 10) Expense service
-    billing-service:
-      build:
-        context: ./services/billing
-      image: billing-service
-      container_name: billing-service
-      ports:
-        - "8088:8088"
-      environment:
-        # Pasamos las mismas vars de Postgres
-        SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/billingdb
-        SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-        SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+  # 11) Billing service
+  billing-service:
+    build:
+      context: ./services/billing
+    image: billing-service
+    container_name: billing-service
+    ports:
+      - "8088:8088"
+    environment:
+      # Pasamos las mismas vars de Postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/billingdb
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
 
-        # Kafka
-        KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      depends_on:
-        kafka:
-          condition: service_started
-        config-server:
-          condition: service_healthy
-        postgres:
-          condition: service_healthy
-      networks:
-        - condo-net
+      # Kafka
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_started
+      config-server:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - condo-net
 
 networks:
   condo-net:
