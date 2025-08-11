@@ -43,7 +43,7 @@ public class SecurityConfig {
                 "/admin/**"
         };
         final String[] RESIDENT_URLS = {
-                "/residents/**"
+                "/billing/**"
         };
         http
                 .csrf(AbstractHttpConfigurer::disable)
