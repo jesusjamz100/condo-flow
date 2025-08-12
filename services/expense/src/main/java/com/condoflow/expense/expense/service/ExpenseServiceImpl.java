@@ -42,7 +42,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         );
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Expense> expenses = repository.findAll(pageable);
+        Page<Expense> expenses = repository.findAll(spec, pageable);
         List<ExpenseResponse> pageResponse = expenses
                 .stream()
                 .map(mapper::toExpenseResponse)
