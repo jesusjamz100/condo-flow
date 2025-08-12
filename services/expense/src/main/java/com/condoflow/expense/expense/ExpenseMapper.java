@@ -27,6 +27,7 @@ public class ExpenseMapper {
         return Expense.builder()
                 .id(request.id())
                 .description(request.description())
+                .amount(request.amount())
                 .scopeType(request.scopeType())
                 .applicableTowers(normalizedTowers)
                 .build();
