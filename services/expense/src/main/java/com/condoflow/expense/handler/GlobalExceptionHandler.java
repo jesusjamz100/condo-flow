@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ExpenseNotFoundException.class)
     public ResponseEntity<String> handler(ExpenseNotFoundException exp) {
         return ResponseEntity
-                .status(BAD_REQUEST)
+                .status(NOT_FOUND)
                 .body(exp.getMsg());
     }
 

@@ -24,7 +24,7 @@ spring:
         - id: expense
           uri: lb://EXPENSE-SERVICE
           predicates:
-            - Path=/expenses,expenses/**
+            - Path=/expenses,/expenses/**
         - id: billing
           uri: lb://BILLING-SERVICE
           predicates:
