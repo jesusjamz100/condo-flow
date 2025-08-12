@@ -1,5 +1,6 @@
 package com.condoflow.expense.handler;
 
+import com.condoflow.expense.exception.ExpenseAlreadyBilledException;
 import com.condoflow.expense.exception.ExpenseNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -21,6 +22,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(NOT_FOUND)
                 .body(exp.getMsg());
+    }
+
+    @ExceptionHandler(ExpenseAlreadyBilledException.class)
+    public ResponseEntity<String> handleException(ExpenseAlreadyBilledException exp) {
+        return ResponseEntity
+                .status(NOT_ACCEPTABLE)
+                .body(exp.getMessage());
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
