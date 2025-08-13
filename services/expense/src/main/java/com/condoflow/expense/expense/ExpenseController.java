@@ -1,6 +1,7 @@
 package com.condoflow.expense.expense;
 
 import com.condoflow.expense.common.PageResponse;
+import com.condoflow.expense.exception.ExpenseAlreadyBilledException;
 import com.condoflow.expense.expense.dto.ExpenseRequest;
 import com.condoflow.expense.expense.dto.ExpenseResponse;
 import com.condoflow.expense.expense.service.ExpenseService;
