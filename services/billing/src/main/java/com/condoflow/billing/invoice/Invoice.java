@@ -36,8 +36,7 @@ public class Invoice {
     private BigDecimal penaltyAmount;
 
     @Column(updatable = false, nullable = false)
-    @Builder.Default
-    private BigDecimal finalAmount = amount.subtract(discountAmount).add(penaltyAmount);
+    private BigDecimal finalAmount;
 
     @Column(updatable = false, nullable = false)
     private Integer apartmentId;

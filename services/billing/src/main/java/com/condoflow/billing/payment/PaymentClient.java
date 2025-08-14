@@ -14,7 +14,7 @@ import java.util.Optional;
 )
 public interface PaymentClient {
 
-    @GetMapping("/admin/{apartmentId}")
+    @GetMapping("/admin/apartments/{apartmentId}")
     Optional<PaymentResponse> getLastPaymentByApartmentId(
             @PathVariable(name = "apartmentId") Integer apartmentId
     );

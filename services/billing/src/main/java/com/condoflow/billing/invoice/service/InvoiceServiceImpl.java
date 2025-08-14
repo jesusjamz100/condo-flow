@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -38,6 +39,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         List<ExpenseResponse> expenses = expenseClient.getAllExpenses(0, 1000, startDate, endDate).getContent();
         List<ApartmentResponse> apartments = apartmentClient.getAllApartments(0, 250).getContent();
         YearMonth period = YearMonth.from(startDate);
+        MathContext mc = new MathContext(3);
 
         for (ApartmentResponse apartment : apartments) {
 
@@ -48,7 +50,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
             BigDecimal balance = apartment.balance();
             Optional<PaymentResponse> lastPayment = paymentClient.getLastPaymentByApartmentId(apartment.id());
-            BigDecimal newBalance;
+            BigDecimal finalAmount;
             BigDecimal amount = ZERO;
             BigDecimal discountAmount;
             BigDecimal penaltyAmount;
@@ -62,8 +64,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                                 amount = amount
                                         .add(expense.amount()
                                                 .multiply(apartment.aliquot()
-                                                        .multiply(TWO
-                                                        )
+                                                        .multiply(TWO)
                                                 )
                                         );
                             }
@@ -73,8 +74,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                                 amount = amount
                                         .add(expense.amount()
                                                 .multiply(apartment.aliquot()
-                                                        .multiply(FOUR
-                                                        )
+                                                        .multiply(FOUR)
                                                 )
                                         );
                             }
@@ -85,29 +85,31 @@ public class InvoiceServiceImpl implements InvoiceService {
             }
 
             if (balance.compareTo(BigDecimal.ZERO) < 0) {
-                penaltyAmount = amount.multiply(TEN_PERCENT);
+                penaltyAmount = amount.multiply(TEN_PERCENT).round(mc);
                 discountAmount = ZERO;
             } else if (lastPayment
+                    .filter(PaymentResponse::approved)
                     .map(PaymentResponse::createdDate)
                     .map(date -> date.isBefore(startDate.plusDays(5).atStartOfDay()))
                     .orElse(false)
             ) {
                 penaltyAmount = ZERO;
-                discountAmount = amount.multiply(TEN_PERCENT);;
+                discountAmount = amount.multiply(TEN_PERCENT).round(mc);
             } else {
                 penaltyAmount = ZERO;
                 discountAmount = ZERO;
             }
 
-            newBalance = apartment.balance().subtract(amount).subtract(penaltyAmount).add(discountAmount);
+            finalAmount = amount.add(penaltyAmount).subtract(discountAmount).round(mc);
 
-            apartmentClient.updateBalance(apartment.id(), newBalance);
+            apartmentClient.updateBalanceFromInvoice(apartment.id(), finalAmount);
             repository.save(
                     Invoice.builder()
                             .apartmentId(apartment.id())
-                            .amount(amount)
+                            .amount(amount.round(mc))
                             .discountAmount(discountAmount)
                             .penaltyAmount(penaltyAmount)
+                            .finalAmount(finalAmount)
                             .period(period)
                             .build()
             );

@@ -4,6 +4,8 @@ import com.condoflow.billing.common.PageResponse;
 import com.condoflow.billing.config.feign.FeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
@@ -23,5 +25,6 @@ public interface ExpenseClient {
             @RequestParam(name = "endDate", required = false) LocalDate endDate
     );
 
-    void makeExpenseBilled(Integer id);
+    @PutMapping("/admin/{expenseId}/makeBilled")
+    void makeExpenseBilled(@PathVariable("expenseId") Integer expenseId);
 }

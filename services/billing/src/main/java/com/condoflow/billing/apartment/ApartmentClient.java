@@ -4,6 +4,8 @@ import com.condoflow.billing.common.PageResponse;
 import com.condoflow.billing.config.feign.FeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
@@ -21,5 +23,9 @@ public interface ApartmentClient {
             @RequestParam(name = "size", defaultValue = "10", required = false) int size
     );
 
-    void updateBalance(Integer id, BigDecimal balance);
+    @PutMapping("/admin/{apartmentId}/updateBalanceFromInvoice")
+    void updateBalanceFromInvoice(
+            @PathVariable("apartmentId") Integer apartmentId,
+            @RequestParam(name = "invoiceAmount") BigDecimal amount
+    );
 }
