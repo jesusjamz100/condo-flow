@@ -59,4 +59,12 @@ public class ExpenseController {
         service.deleteExpenseById(expenseId);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/admin/{expenseId}/makeBilled")
+    public ResponseEntity<Void> makeExpenseBilled(
+            @PathVariable("expenseId") Integer expenseId
+    ) {
+        service.makeExpenseBilled(expenseId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }
