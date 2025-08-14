@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/payments")
@@ -74,6 +76,13 @@ public class PaymentController {
     ) {
         service.approvePayment(paymentId);
         return ResponseEntity.accepted().build();
+    }
+
+    @GetMapping("/admin/apartments/{apartmentId}")
+    public ResponseEntity<Optional<PaymentResponse>> getLastPaymentByApartmentId(
+            @PathVariable(name = "apartmentId") Integer apartmentId
+    ) {
+        return ResponseEntity.ok(service.findLastPaymentByApartmentId(apartmentId));
     }
 
 }

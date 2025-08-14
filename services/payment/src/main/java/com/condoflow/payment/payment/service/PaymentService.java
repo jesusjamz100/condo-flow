@@ -5,6 +5,8 @@ import com.condoflow.payment.payment.PaymentType;
 import com.condoflow.payment.payment.dto.PaymentRequest;
 import com.condoflow.payment.payment.dto.PaymentResponse;
 
+import java.util.Optional;
+
 public interface PaymentService {
     PageResponse<PaymentResponse> findMyPayments(int page, int size, PaymentType type);
 
@@ -19,4 +21,6 @@ public interface PaymentService {
     PaymentResponse findById(Integer paymentId);
 
     void approvePayment(Integer paymentId);
+
+    Optional<PaymentResponse> findLastPaymentByApartmentId(Integer apartmentId);
 }
