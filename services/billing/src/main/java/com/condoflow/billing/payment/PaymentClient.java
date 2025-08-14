@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.Optional;
 
 @FeignClient(
-        name = "apartment-client",
+        name = "payment-client",
         url = "${application.config.payment-url}",
         configuration = FeignClientConfig.class
 )
