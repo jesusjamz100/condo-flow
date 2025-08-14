@@ -23,6 +23,8 @@ public interface ApartmentService {
 
     void updateBalanceFromPayment(Integer apartmentId, BigDecimal amount);
 
+    void updateBalanceFromInvoice(Integer apartmentId, BigDecimal amount);
+
     void deleteApartmentById(int apartmentId);
 
     PageResponse<ResidentResponse> findApartmentResidents(int apartmentId, int page, int size);

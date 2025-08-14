@@ -21,6 +21,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -169,6 +170,15 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setApproved(true);
         apartmentClient.updateBalanceFromPayment(payment.getApartmentId(), payment.getAmount());
         repository.save(payment);
+    }
+
+    @Override
+    public Optional<PaymentResponse> findLastPaymentByApartmentId(Integer apartmentId) {
+        List<Payment> payments = repository.findByApartmentIdOrderByCreatedDateDesc(apartmentId);
+        if (payments.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(mapper.toPaymentResponse(payments.getFirst()));
     }
 
     Specification<Payment> byApartmentId(Integer apartmentId) {

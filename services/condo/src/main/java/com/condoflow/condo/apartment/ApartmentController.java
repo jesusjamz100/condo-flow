@@ -77,6 +77,15 @@ public class ApartmentController {
         return ResponseEntity.accepted().build();
     }
 
+    @PutMapping("/admin/{apartmentId}/updateBalanceFromInvoice")
+    public ResponseEntity<Void> updateBalanceFromInvoice(
+            @PathVariable("apartmentId") Integer apartmentId,
+            @RequestParam(name = "invoiceAmount") BigDecimal amount
+    ) {
+        service.updateBalanceFromInvoice(apartmentId, amount);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
     @DeleteMapping("/admin/deleteById/{apartmentId}")
     public ResponseEntity<Void> deleteApartmentById(
             @PathVariable("apartmentId") int apartmentId

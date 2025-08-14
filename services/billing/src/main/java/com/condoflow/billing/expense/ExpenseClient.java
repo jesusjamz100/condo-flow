@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 
 @FeignClient(
-    name = "apartment-client",
+    name = "expense-client",
     url = "${application.config.expense-url}",
     configuration = FeignClientConfig.class
 )

@@ -126,6 +126,16 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
+    public void updateBalanceFromInvoice(Integer apartmentId, BigDecimal amount) {
+        Apartment apartment = apartmentRepository.findById(apartmentId)
+                .orElseThrow(() -> new ApartmentNotFoundException("Apartment not found with ID:: " + apartmentId));
+        apartment.setBalance(
+                apartment.getBalance().subtract(amount).round(new MathContext(3))
+        );
+        apartmentRepository.save(apartment);
+    }
+
+    @Override
     public void deleteApartmentById(int apartmentId) {
         Apartment apartment = apartmentRepository.findById(apartmentId)
                 .orElseThrow(() -> new ApartmentNotFoundException("Apartment not found with ID:: " + apartmentId));
