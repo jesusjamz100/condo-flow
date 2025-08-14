@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 
 @Entity
 @AllArgsConstructor
@@ -35,10 +36,14 @@ public class Invoice {
     private BigDecimal penaltyAmount;
 
     @Column(updatable = false, nullable = false)
+    @Builder.Default
     private BigDecimal finalAmount = amount.subtract(discountAmount).add(penaltyAmount);
 
     @Column(updatable = false, nullable = false)
     private Integer apartmentId;
+
+    @Column(updatable = false, nullable = false)
+    private YearMonth period;
 
     @CreatedDate
     @Column(updatable = false, nullable = false)

@@ -5,6 +5,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Optional;
+
 @FeignClient(
         name = "apartment-client",
         url = "${application.config.payment-url}",
@@ -13,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface PaymentClient {
 
     @GetMapping("/admin/{apartmentId}")
-    PaymentResponse getLastPaymentByApartmentId(
+    Optional<PaymentResponse> getLastPaymentByApartmentId(
             @PathVariable(name = "apartmentId") Integer apartmentId
     );
 }

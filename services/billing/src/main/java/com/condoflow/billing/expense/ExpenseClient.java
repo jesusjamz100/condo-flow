@@ -22,4 +22,6 @@ public interface ExpenseClient {
             @RequestParam(name = "startDate", required = false) LocalDate startDate,
             @RequestParam(name = "endDate", required = false) LocalDate endDate
     );
+
+    void makeExpenseBilled(Integer id);
 }
