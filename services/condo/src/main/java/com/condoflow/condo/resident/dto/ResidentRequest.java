@@ -17,8 +17,6 @@ public record ResidentRequest(
         String document,
         String phoneNumber,
         String emergencyContactName,
-        String emergencyContactPhone,
-        @NotNull
-        boolean isPrimaryResident
+        String emergencyContactPhone
 ) {
 }

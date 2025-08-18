@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@layer components {
+    .not-found {
+        @apply flex flex-col gap-2 justify-center p-5 w-full items-center;
+    }
+
+    .navbar {
+        @apply bg-gray-200 flex flex-col gap-10 px-12 py-8 items-center h-screen w-auto;
+    }
+
+    .navbar-list {
+        @apply flex flex-col gap-8;
+    }
+
+    .active-navlink {
+        @apply font-bold underline;
+    }
+
+    .navlink {
+        @apply hover:underline;
+    }
+
+    .logo-title {
+        @apply text-2xl font-bold;
+    }
+
+    .card {
+        @apply bg-white p-5 w-fit rounded-2xl shadow;
+    }
+
+    .index-view {
+        @apply flex flex-col bg-gray-100 p-10 w-full gap-5;
+    }
+}
