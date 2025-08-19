@@ -1,5 +1,5 @@
 import httpClient from "../../../services/httpClient";
-import type { PageResponse } from "../../../types/api";
+import type { PageResponse, PaymentResponse } from "../../../types/api";
 
 
 // Publicas

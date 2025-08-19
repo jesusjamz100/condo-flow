@@ -34,7 +34,7 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
     return (
         <>
             {apartments.length === 0 ? (<p>No hay Apartmentos</p>) : (
-                <table className="text-center">
+                <table className="text-center mt-10">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -46,12 +46,17 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
                     </thead>
                     <tbody>
                         {apartments.map(apt => {return (
-                            <tr key={apt.id}>
+                            <tr key={apt.id} className=" border-b-1">
                                 <td>{apt.id}</td>
                                 <td>{apt.code}</td>
                                 <td>{apt.tower}</td>
                                 <td>{apt.balance}</td>
-                                <td><Link to={`/apartamentos/${apt.id}`}>Detalles</Link></td>
+                                <td className="flex gap-2 items-center justify-center">
+                                    <Link to={`/apartamentos/${apt.id}`}>
+                                        <button className="p-2 bg-blue-300 rounded-lg my-5 hover:cursor-pointer">Detalles</button>
+                                    </Link>
+                                    {isAdmin ? <></> : <></>}
+                                </td>
                             </tr>
                         )})}
                     </tbody>
