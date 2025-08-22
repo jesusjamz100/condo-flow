@@ -1,16 +1,16 @@
 
 export const NAVBAR_PUBLIC_ITEMS: Array<Array<string>> = [
     ["Dashboard", "/dashboard"],
-    ["Apartamentos", "/apartamentos"],
-    ["Pagos", "/pagos"],
-    ["Facturas", "/facturas"],
+    ["Apartamentos", "/dashboard/apartamentos"],
+    ["Pagos", "/dashboard/pagos"],
+    ["Facturas", "/dashboard/facturas"],
 ];
 
 export const NAVBAR_ADMIN_ITEMS: Array<Array<string>> = [
     ["Dashboard", "/admin/dashboard"],
-    ["Pagos", "/admin/pagos"],
-    ["Apartamentos", "/admin/apartamentos"],
-    ["Facturas", "/admin/facturas"],
+    ["Pagos", "/admin/dashboard/pagos"],
+    ["Apartamentos", "/admin/dashboard/apartamentos"],
+    ["Facturas", "/admin/dashboard/facturas"],
 ];
 
 export const PAYMENT_TYPES: Array<string> = [

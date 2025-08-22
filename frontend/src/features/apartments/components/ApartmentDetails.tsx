@@ -11,19 +11,8 @@ interface ApartmentDetailsProps {
 
 const ApartmentDetails = ({apartmentId, isAdmin} : ApartmentDetailsProps) => {
 
-    const paymentMock = {
-        id: 1,
-        amount: 10,
-        description: "Pago test",
-        type: "CASH",
-        apartmentId: 1,
-        residentId: 1,
-        approved: false,
-        createdDate: new Date("2025-10-10")
-    }
-
     const [apartment, setApartment] = useState<ApartmentResponse | null>(null);
-    const [payments, setPayments] = useState<PaymentResponse[]>([paymentMock])
+    const [payments, setPayments] = useState<PaymentResponse[]>([])
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -31,8 +20,8 @@ const ApartmentDetails = ({apartmentId, isAdmin} : ApartmentDetailsProps) => {
             try {
                 const apartmentData = isAdmin ? await getApartmentById(apartmentId) : await getOneOfMyApartments(apartmentId);
                 setApartment(apartmentData);
-                // const paymentsData: PageResponse<PaymentResponse> = isAdmin ? await getMyPaymentsByApartmentId(apartmentData.id) : await getMyPaymentsByApartmentId(apartmentData.id, 0, 5);
-                // setPayments(paymentsData.content);
+                const paymentsData: PageResponse<PaymentResponse> = isAdmin ? await getMyPaymentsByApartmentId(apartmentData.id) : await getMyPaymentsByApartmentId(apartmentData.id, 0, 5);
+                setPayments(paymentsData.content);
                 setLoading(false);
             } catch (error) {
                 console.log(error)
@@ -72,6 +61,7 @@ const ApartmentDetails = ({apartmentId, isAdmin} : ApartmentDetailsProps) => {
                                 <th>Monto</th>
                                 <th>Aprobado</th>
                                 <th>Tipo</th>
+                                <th>Referencia</th>
                             </tr>
                         </thead>
                         <tbody className="table-row-group">
@@ -79,9 +69,9 @@ const ApartmentDetails = ({apartmentId, isAdmin} : ApartmentDetailsProps) => {
                                 return (
                                     <tr>
                                         <td>
-                                            {payment.createdDate.getDay()}-
+                                            {/* {payment.createdDate.getDay()}-
                                             {payment.createdDate.getMonth()}-
-                                            {payment.createdDate.getFullYear()}
+                                            {payment.createdDate.getFullYear()} */}
                                         </td>
                                         <td>
                                             {payment.description}
@@ -94,6 +84,9 @@ const ApartmentDetails = ({apartmentId, isAdmin} : ApartmentDetailsProps) => {
                                         </td>
                                         <td>
                                             {payment.type === "CASH" ? "Efectivo" : "Transferencia"}
+                                        </td>
+                                        <td>
+                                            {payment.reference ? payment.reference : "N/A"}
                                         </td>
                                     </tr>
                                 )

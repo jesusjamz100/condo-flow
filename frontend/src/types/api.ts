@@ -70,6 +70,7 @@ export interface PaymentResponse {
     id: number,
     amount: number,
     description: string,
+    reference: string | null,
     type: string,
     apartmentId: number,
     residentId: number,

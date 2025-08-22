@@ -52,7 +52,7 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
                                 <td>{apt.tower}</td>
                                 <td>{apt.balance}</td>
                                 <td className="flex gap-2 items-center justify-center">
-                                    <Link to={`/apartamentos/${apt.id}`}>
+                                    <Link to={`/dashboard/apartamentos/${apt.id}`}>
                                         <button className="p-2 bg-blue-300 rounded-lg my-5 hover:cursor-pointer">Detalles</button>
                                     </Link>
                                     {isAdmin ? <></> : <></>}
