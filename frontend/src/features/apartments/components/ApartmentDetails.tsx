@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import type { ApartmentResponse, PageResponse, PaymentResponse } from "../../../types/api";
 import { getApartmentById, getOneOfMyApartments } from "../api";
 import Loading from "../../../components/Loading";
 import { getMyPaymentsByApartmentId } from "../../payments/api";
+import formatDate from "../../../utils/formatDate";
 
 interface ApartmentDetailsProps {
     apartmentId: number,
@@ -53,46 +55,33 @@ const ApartmentDetails = ({apartmentId, isAdmin} : ApartmentDetailsProps) => {
                 </p>
                 <p className="text-2xl font-semibold mt-5 w-full text-center">Últimos Pagos</p>
                 {payments.length > 0 ? (
-                    <table className="table-auto text-center">
-                        <thead className="table-header-group">
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Descripción</th>
-                                <th>Monto</th>
-                                <th>Aprobado</th>
-                                <th>Tipo</th>
-                                <th>Referencia</th>
-                            </tr>
-                        </thead>
-                        <tbody className="table-row-group">
-                            {payments.map(payment => {
-                                return (
-                                    <tr>
-                                        <td>
-                                            {/* {payment.createdDate.getDay()}-
-                                            {payment.createdDate.getMonth()}-
-                                            {payment.createdDate.getFullYear()} */}
-                                        </td>
-                                        <td>
-                                            {payment.description}
-                                        </td>
-                                        <td>
-                                            ${payment.amount}
-                                        </td>
-                                        <td>
-                                            {payment.approved ? "Sí" : "No"}
-                                        </td>
-                                        <td>
-                                            {payment.type === "CASH" ? "Efectivo" : "Transferencia"}
-                                        </td>
-                                        <td>
-                                            {payment.reference ? payment.reference : "N/A"}
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
+                    
+                <TableContainer component={Paper}>
+                    <Table sx={{ minWidth:650, textAlign:"center"}} aria-label="Apartamentos">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={{fontWeight: "bold"}}>Fecha</TableCell>
+                                <TableCell sx={{fontWeight: "bold"}}>Descripción</TableCell>
+                                <TableCell sx={{fontWeight: "bold"}}>Monto</TableCell>
+                                <TableCell sx={{fontWeight: "bold"}}>Aprobado</TableCell>
+                                <TableCell sx={{fontWeight: "bold"}}>Tipo</TableCell>
+                                <TableCell sx={{fontWeight: "bold"}}>Referencia</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {payments.map(payment => {return (
+                                <TableRow key={payment.id}>
+                                    <TableCell>{formatDate(payment.createdDate)}</TableCell>
+                                    <TableCell>{payment.description}</TableCell>
+                                    <TableCell>{payment.amount}</TableCell>
+                                    <TableCell>{payment.approved ? "Sí" : "No"}</TableCell>
+                                    <TableCell>{payment.type === "CASH" ? "Efectivo" : "Transferencia"}</TableCell>
+                                    <TableCell>{payment.reference ? payment.reference : "N/A"}</TableCell>
+                                </TableRow>
+                            )})}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
                 ) : <>No hay pagos en este apartamento</>}
             </div>
         </>

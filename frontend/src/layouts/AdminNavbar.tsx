@@ -2,13 +2,13 @@ import { Link, useLocation } from "react-router";
 import { Button } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 import { useAuth } from "../features/auth/AuthProvider";
-import { NAVBAR_PUBLIC_ITEMS } from "../utils/constants";
+import { NAVBAR_ADMIN_ITEMS } from "../utils/constants";
 
-const Navbar = () => {
+const AdminNavbar = () => {
 
     const { tokenData, logOut } = useAuth();
     const { realm_access: { roles } } = tokenData;
-    const isAdmin: boolean = roles?.indexOf("ADMIN") > -1;
+    const isResident: boolean = roles?.indexOf("RESIDENT") > -1;
 
     const location = useLocation();
     const isActiveLink = (path: string) => {
@@ -27,16 +27,16 @@ const Navbar = () => {
                 <span className="text-green-700">Flow</span>
             </p>
             <ul className="navbar-list">
-                {NAVBAR_PUBLIC_ITEMS.map((item) => {
+                {NAVBAR_ADMIN_ITEMS.map((item) => {
                     return (
                         <li key={item[0]} className="navlink">
                             <Link to={item[1]} className={isActiveLink(item[1])}>{item[0]}</Link>
                         </li>
                     )
                 })}
-                {isAdmin ? (
-                    <li key="admin" className="navlink">
-                        <Link to="/admin/dashboard">Panel Administración</Link>
+                {isResident ? (
+                    <li key="resident" className="navlink">
+                        <Link to="/dashboard">Panel Residente</Link>
                     </li>
                 ) : (<></>)}
             </ul>
@@ -45,4 +45,4 @@ const Navbar = () => {
     )
 }
 
-export default Navbar;
+export default AdminNavbar;

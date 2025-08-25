@@ -62,8 +62,8 @@ export interface ExpenseResponse {
     billed: boolean,
     scopeType: string,
     applicableTowers: Set<string>,
-    createdDate: Date,
-    lastModifiedDate: Date | null
+    createdDate: string,
+    lastModifiedDate: string | null
 }
 
 export interface PaymentResponse {
@@ -75,7 +75,7 @@ export interface PaymentResponse {
     apartmentId: number,
     residentId: number,
     approved: boolean,
-    createdDate: Date
+    createdDate: string
 }
 
 export interface ResidentRequest {
@@ -101,8 +101,7 @@ export interface PaymentRequest {
     type: string
     reference: string | null,
     description: string,
-    apartmentId: string,
-    residentId: string
+    apartmentId: number
 }
 
 export interface ExpenseRequest {

@@ -1,5 +1,5 @@
 import httpClient from "../../../services/httpClient";
-import type { PageResponse, PaymentResponse } from "../../../types/api";
+import type { PageResponse, PaymentResponse, PaymentRequest } from "../../../types/api";
 
 
 // Publicas
@@ -40,6 +40,11 @@ export async function getAllPayments(page: number = 0, size: number = 10, type?:
 
 export async function getPaymentById(paymentId: number) {
     const { data } = await httpClient.get<PaymentResponse>(`/payments/admin/${paymentId}`);
+    return data;
+}
+
+export async function getAllPaymentsByApartmentId(apartmentId: number) {
+    const { data } = await httpClient.get<PaymentResponse>(`/payments/admin/apartments/byId/${apartmentId}`);
     return data;
 }
 

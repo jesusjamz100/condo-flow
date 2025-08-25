@@ -78,6 +78,15 @@ public class PaymentController {
         return ResponseEntity.accepted().build();
     }
 
+    @GetMapping("/admin/apartments/byId/{apartmentId}")
+    public ResponseEntity<PageResponse<PaymentResponse>> getPaymentsByApartmentId(
+            @PathVariable(name = "apartmentId") Integer apartmentId,
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+    ) {
+        return ResponseEntity.ok(service.findAllPaymentsByApartmentId(apartmentId, page, size));
+    }
+
     @GetMapping("/admin/apartments/{apartmentId}")
     public ResponseEntity<Optional<PaymentResponse>> getLastPaymentByApartmentId(
             @PathVariable(name = "apartmentId") Integer apartmentId

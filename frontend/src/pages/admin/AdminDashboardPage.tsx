@@ -1,16 +1,17 @@
 import PageTitle from "../../components/PageTitle";
+import AdminSummary from "../../features/dashboard/AdminSummary";
 import Greeting from "../../features/dashboard/Greeting";
-import SummaryView from "../../features/dashboard/SummaryView";
 
-const DashboardPage = () => {
+
+const AdminDashboardPage = () => {
 
     return (
         <>
             <Greeting />
             <PageTitle title="Dashboard" />
-            <SummaryView />
+            <AdminSummary />
         </>
     );
 };
 
-export default DashboardPage;
+export default AdminDashboardPage;

@@ -22,3 +22,17 @@ export function RequireAuth() {
 
     return <Outlet />;
 }
+
+export function RequireAdmin() {
+
+    const { tokenData } = useAuth();
+    const { realm_access: { roles } } = tokenData;
+    const isAdmin: boolean = roles?.indexOf("ADMIN") > -1;
+
+    if (!isAdmin) {
+        window.location.replace("http://localhost:5173/dashboard");
+        return;
+    }
+
+    return <Outlet />;
+}

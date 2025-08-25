@@ -127,6 +127,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new RuntimeException("Wire payments should include a reference");
         }
         Payment payment = mapper.toPayment(request);
+        payment.setResidentId(resident.id());
         repository.save(payment);
     }
 
@@ -179,6 +180,27 @@ public class PaymentServiceImpl implements PaymentService {
             return Optional.empty();
         }
         return Optional.of(mapper.toPaymentResponse(payments.getFirst()));
+    }
+
+    @Override
+    public PageResponse<PaymentResponse> findAllPaymentsByApartmentId(Integer apartmentId, int page, int size) {
+        ApartmentResponse apartment = apartmentClient.findApartmentById(apartmentId)
+                .orElseThrow(() -> new RuntimeException("Apartment Not Found"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Page<Payment> payments = repository.findByApartmentId(apartmentId, pageable);
+        List<PaymentResponse> paymentResponse = payments
+                .stream()
+                .map(mapper::toPaymentResponse)
+                .toList();
+        return new PageResponse<>(
+                paymentResponse,
+                payments.getNumber(),
+                payments.getSize(),
+                payments.getTotalElements(),
+                payments.getTotalPages(),
+                payments.isFirst(),
+                payments.isLast()
+        );
     }
 
     Specification<Payment> byApartmentId(Integer apartmentId) {

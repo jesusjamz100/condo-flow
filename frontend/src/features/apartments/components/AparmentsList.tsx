@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, ButtonGroup, Paper } from "@mui/material";
+import { Delete, Lightbulb, ModeEdit } from "@mui/icons-material";
 import type { ApartmentResponse } from "../../../types/api";
-import { getAllApartments, getMyApartments } from "../api";
+import { deleteApartmentById, getAllApartments, getMyApartments } from "../api";
 import Loading from "../../../components/Loading";
 import { Link } from "react-router";
 
@@ -27,41 +29,58 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
         fetchData();
     }, [isAdmin]);
 
+    const handleDeleteClick = async (apartmentId: number) => {
+        await deleteApartmentById(apartmentId);
+        location.reload();
+    }
+
     if (loading) {
         return <Loading text="Cargando Apartamentos..." />;
     }
 
     return (
         <>
-            {apartments.length === 0 ? (<p>No hay Apartmentos</p>) : (
-                <table className="text-center mt-10">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Código</th>
-                            <th>Torre</th>
-                            <th>Balance</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth:650, textAlign:"center"}} aria-label="Apartamentos">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>ID</TableCell>
+                            <TableCell>Código</TableCell>
+                            <TableCell>Torre</TableCell>
+                            <TableCell>Balance</TableCell>
+                            <TableCell>Acciones</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
                         {apartments.map(apt => {return (
-                            <tr key={apt.id} className=" border-b-1">
-                                <td>{apt.id}</td>
-                                <td>{apt.code}</td>
-                                <td>{apt.tower}</td>
-                                <td>{apt.balance}</td>
-                                <td className="flex gap-2 items-center justify-center">
-                                    <Link to={`/dashboard/apartamentos/${apt.id}`}>
-                                        <button className="p-2 bg-blue-300 rounded-lg my-5 hover:cursor-pointer">Detalles</button>
-                                    </Link>
-                                    {isAdmin ? <></> : <></>}
-                                </td>
-                            </tr>
+                            <TableRow key={apt.id}>
+                                <TableCell>{apt.id}</TableCell>
+                                <TableCell>{apt.code}</TableCell>
+                                <TableCell>{apt.tower}</TableCell>
+                                <TableCell>{apt.balance}</TableCell>
+                                <TableCell>
+                                    {isAdmin ?
+                                    <>
+                                        <ButtonGroup variant="text" aria-label="Botones de Acción">
+                                            <Link to={`/admin/dashboard/apartamentos/${apt.id}`}>
+                                                <Button size="small" startIcon={<Lightbulb />}>Detalles</Button>
+                                            </Link>
+                                            <Link to={`/admin/dashboard/apartamentos/${apt.id}/editar`}>
+                                                <Button size="small" startIcon={<ModeEdit />}>Editar</Button>
+                                            </Link>
+                                            <Button onClick={() => handleDeleteClick(apt.id)} startIcon={<Delete />} size="small">Eliminar</Button>
+                                        </ButtonGroup>
+                                    </> : <>
+                                        <Link to={`/dashboard/apartamentos/${apt.id}`}>
+                                            <Button variant="outlined" size="small" startIcon={<Lightbulb />}>Detalles</Button>
+                                        </Link>
+                                    </>}
+                                </TableCell>
+                            </TableRow>
                         )})}
-                    </tbody>
-                </table>
-            )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </>
     );
 }

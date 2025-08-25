@@ -23,4 +23,6 @@ public interface PaymentService {
     void approvePayment(Integer paymentId);
 
     Optional<PaymentResponse> findLastPaymentByApartmentId(Integer apartmentId);
+
+    PageResponse<PaymentResponse> findAllPaymentsByApartmentId(Integer apartmentId, int page, int size);
 }
