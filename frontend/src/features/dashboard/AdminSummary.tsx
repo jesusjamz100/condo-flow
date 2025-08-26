@@ -6,6 +6,7 @@ import type { ApartmentResponse, PaymentResponse, ResidentResponse } from "../..
 import { getAllResidents } from "../residents/api";
 import { getAllPayments } from "../payments/api";
 import MonthlyExpensesChart from "../expenses/components/MonthlyExpenseChart";
+import ApartmentsBalancePie from "../apartments/components/ApartmentsBalancePie";
 
 const AdminSummary = () => {
 
@@ -39,7 +40,7 @@ const AdminSummary = () => {
                 display: "flex",
                 gap: 4
             }}>
-                <Card variant="outlined" sx={{width: "100%"}}>
+                <Card sx={{width: "100%"}}>
                     <CardContent>
                         <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
                             Apartamentos Totales
@@ -49,7 +50,7 @@ const AdminSummary = () => {
                         </Typography>
                     </CardContent>
                 </Card>
-                <Card variant="outlined" sx={{width: "100%"}}>
+                <Card sx={{width: "100%"}}>
                     <CardContent>
                         <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
                             Residentes Totales
@@ -59,7 +60,7 @@ const AdminSummary = () => {
                         </Typography>
                     </CardContent>
                 </Card>
-                <Card variant="outlined" sx={{width: "100%"}}>
+                <Card sx={{width: "100%"}}>
                     <CardContent>
                         <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
                             Pagos sin aprobar
@@ -69,7 +70,7 @@ const AdminSummary = () => {
                         </Typography>
                     </CardContent>
                 </Card>
-                <Card variant="outlined" sx={{width: "100%"}}>
+                <Card sx={{width: "100%"}}>
                     <CardContent>
                         <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
                             Balance Total de Apartamentos
@@ -84,7 +85,7 @@ const AdminSummary = () => {
                 display: "flex",
                 gap: 4
             }}>
-                <Card variant="outlined" sx={{width: "100%"}}>
+                <Card sx={{width: "100%"}}>
                     <CardContent>
                         <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
                             Evolución de gastos { dayjs().year() }
@@ -92,8 +93,13 @@ const AdminSummary = () => {
                         <MonthlyExpensesChart />
                     </CardContent>
                 </Card>
-                <Card variant="outlined" sx={{ width: "50%" }}>
-
+                <Card sx={{ width: "50%" }}>
+                    <CardContent>
+                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
+                            Apartamentos morosos vs Apartamentos al día
+                        </Typography>
+                        <ApartmentsBalancePie />
+                    </CardContent>
                 </Card>
             </Box>
         </>
