@@ -11,6 +11,7 @@ export const NAVBAR_ADMIN_ITEMS: Array<Array<string>> = [
     ["Residentes", "/admin/dashboard/residentes"],
     ["Apartamentos", "/admin/dashboard/apartamentos"],
     ["Pagos", "/admin/dashboard/pagos"],
+    ["Gastos", "/admin/dashboard/gastos"],
     ["Facturas", "/admin/dashboard/facturas"],
 ];
 

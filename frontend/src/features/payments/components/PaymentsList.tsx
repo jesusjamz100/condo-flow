@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, ButtonGroup, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { Delete, Lightbulb, ModeEdit } from "@mui/icons-material";
+import { Button, ButtonGroup, FormControl, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, type SelectChangeEvent } from "@mui/material";
+import { Done, Lightbulb } from "@mui/icons-material";
 import type { PaymentResponse } from "../../../types/api";
 import { approvePayment, getAllMyPayments, getAllPayments } from "../api";
 import Loading from "../../../components/Loading";
@@ -14,13 +14,28 @@ interface PaymentsListProps {
 const PaymentsList = ({isAdmin}: PaymentsListProps) => {
 
     const [payments, setPayments] = useState<PaymentResponse[]>([]);
+    const [typeFilter, setTypeFilter] = useState<string>("");
+    const [approvedFilter, setApprovedFilter] = useState<string>("");
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = isAdmin ? await getAllPayments() : await getAllMyPayments();
-                setPayments(data.content ?? []);
+                if (isAdmin) {
+                    const data = await getAllPayments(
+                        0, 100000,
+                        typeFilter || undefined,
+                        approvedFilter !== "" ? (approvedFilter === "true" ? true : false) : undefined,
+                        startDate || undefined,
+                        endDate || undefined
+                    );
+                    setPayments(data.content ?? []);
+                } else {
+                    const data = await getAllMyPayments();
+                    setPayments(data.content ?? []);
+                }
             } catch (error) {
                 console.log(error);
             } finally {
@@ -28,7 +43,7 @@ const PaymentsList = ({isAdmin}: PaymentsListProps) => {
             }
         }
         fetchData();
-    }, [isAdmin]);
+    }, [approvedFilter, endDate, isAdmin, startDate, typeFilter]);
 
     const handleApproveClick = async (paymentId: number) => {
         await approvePayment(paymentId);
@@ -41,6 +56,57 @@ const PaymentsList = ({isAdmin}: PaymentsListProps) => {
 
     return (
         <>
+        {isAdmin && (
+            <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+                {/* Tipo */}
+                <FormControl sx={{ minWidth: 150 }}>
+                    <InputLabel id="select-type-label">Tipo</InputLabel>
+                    <Select
+                        labelId="select-type-label"
+                        id="select-type"
+                        value={typeFilter}
+                        label="Tipo"
+                        onChange={(e: SelectChangeEvent) => setTypeFilter(e.target.value)}
+                    >
+                        <MenuItem value="">Todos</MenuItem>
+                        <MenuItem value="CASH">Efectivo</MenuItem>
+                        <MenuItem value="WIRE">Transferencia</MenuItem>
+                    </Select>
+                </FormControl>
+
+                {/* Estado de aprobación */}
+                <FormControl sx={{ minWidth: 150 }}>
+                    <InputLabel id="select-approved-label">Aprobado</InputLabel>
+                    <Select
+                        labelId="select-approved-label"
+                        id="select-approved"
+                        value={approvedFilter}
+                        label="Aprobado"
+                        onChange={(e: SelectChangeEvent) => setApprovedFilter(e.target.value)}
+                    >
+                        <MenuItem value="">Todos</MenuItem>
+                        <MenuItem value="true">Sí</MenuItem>
+                        <MenuItem value="false">No</MenuItem>
+                    </Select>
+                </FormControl>
+
+                {/* Fechas */}
+                <TextField
+                    label="Desde"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                />
+                <TextField
+                    label="Hasta"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                />
+            </div>
+        )}
             {payments.length < 1 ? (<p>No hay Pagos</p>) : (
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth:650, textAlign:"center"}} aria-label="Apartamentos">
@@ -73,10 +139,8 @@ const PaymentsList = ({isAdmin}: PaymentsListProps) => {
                                                 <Link to={`/admin/dashboard/pagos/${payment.id}`}>
                                                     <Button size="small" startIcon={<Lightbulb />}>Detalles</Button>
                                                 </Link>
-                                                <Link to={`/admin/dashboard/pagos/${payment.id}/editar`}>
-                                                    <Button size="small" startIcon={<ModeEdit />}>Editar</Button>
-                                                </Link>
-                                                <Button onClick={() => handleApproveClick(payment.id)} startIcon={<Delete />} size="small">Aprobar</Button>
+                                                {!payment.approved ? <Button onClick={() => handleApproveClick(payment.id)} startIcon={<Done />} size="small">Aprobar</Button> : <></>}
+                                                
                                             </ButtonGroup>
                                         </> : <>
                                             <Link to={`/dashboard/pagos/${payment.id}`}>

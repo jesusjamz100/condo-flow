@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -132,11 +133,15 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PageResponse<PaymentResponse> findAllPayments(int page, int size, PaymentType type) {
+    public PageResponse<PaymentResponse> findAllPayments(int page, int size, PaymentType type, Boolean approved, LocalDate startDate, LocalDate endDate) {
 
         Specification<Payment> spec = Specification
                 .allOf(
-                        type != null ? byPaymentType(type) : null
+                        type != null ? byPaymentType(type) : null,
+                        (byApproved(approved)),
+                        (startDate != null && endDate != null) ? byCreatedBetween(startDate, endDate) : null,
+                        (startDate != null && endDate == null) ? byCreatedAfter(startDate) : null,
+                        (startDate == null && endDate != null) ? byCreatedBefore(endDate) : null
                 );
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
@@ -213,5 +218,30 @@ public class PaymentServiceImpl implements PaymentService {
 
     Specification<Payment> byPaymentType(PaymentType type) {
         return (root, query, cb) -> cb.equal(root.get("type"), type);
+    }
+
+    Specification<Payment> byApproved(Boolean approved) {
+        return (root, query, cb) -> {
+            if (approved == null) {
+                return cb.conjunction(); // no aplica filtro
+            }
+            return cb.equal(root.get("approved"), approved);
+        };
+    }
+
+    public static Specification<Payment> byCreatedBetween(LocalDate startDate, LocalDate endDate) {
+        return (root, query, cb) -> cb.between(
+                root.get("createdDate"),
+                startDate.atStartOfDay(),
+                endDate.plusDays(1).atStartOfDay()
+        );
+    }
+
+    public static Specification<Payment> byCreatedAfter(LocalDate startDate) {
+        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get("createdDate"), startDate.atStartOfDay());
+    }
+
+    public static Specification<Payment> byCreatedBefore(LocalDate end) {
+        return (root, query, cb) -> cb.lessThan(root.get("createdDate"), end.plusDays(1).atStartOfDay());
     }
 }

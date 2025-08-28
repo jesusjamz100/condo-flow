@@ -1,5 +1,5 @@
-import PageTitle from "../../../components/PageTitle";
-import PaymentForm from "../../../features/payments/components/PaymentForm";
+import PageTitle from "../../components/PageTitle";
+import PaymentForm from "../../features/payments/components/PaymentForm";
 
 const PaymentRegisterPage = () => {
 

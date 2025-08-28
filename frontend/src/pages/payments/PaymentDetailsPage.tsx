@@ -1,6 +1,6 @@
 import { Navigate, useParams } from "react-router";
-import PageTitle from "../../../components/PageTitle";
-import PaymentDetails from "../../../features/payments/components/PaymentDetails";
+import PageTitle from "../../components/PageTitle";
+import PaymentDetails from "../../features/payments/components/PaymentDetails";
 
 
 const PaymentDetailsPage = ({isAdmin}: {isAdmin: boolean}) => {

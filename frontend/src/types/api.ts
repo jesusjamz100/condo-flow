@@ -34,6 +34,8 @@ export interface ApartmentResponse {
 export interface ResidentResponse {
     id: number,
     keycloakUserId: string,
+    firstName: string,
+    lastName: string,
     document: string,
     phoneNumber: string | null,
     emergencyContactName: string | null,

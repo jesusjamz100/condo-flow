@@ -30,10 +30,13 @@ export async function registerPayment(payment: PaymentRequest) {
 }
 
 // Admin
-export async function getAllPayments(page: number = 0, size: number = 10, type?: string) {
+export async function getAllPayments(page: number = 0, size: number = 10, type?: string, approved?: boolean, startDate?: string, endDate?: string) {
     const { data } = await httpClient.get<PageResponse<PaymentResponse>>(
-        `/payments/admin?page=${page}&size=${size}
-        ${type ? "&type="+ type : ''}`
+        `/payments/admin?page=${page}&size=${size}`+
+        `${type ? "&type="+ type : ''}`+
+        `${approved !== undefined ? "&approved="+ approved : ''}`+
+        `${startDate ? "&startDate="+ startDate : ''}`+
+        `${endDate ? "&endDate="+ endDate : ''}`
     );
     return data;
 }
@@ -44,7 +47,7 @@ export async function getPaymentById(paymentId: number) {
 }
 
 export async function getAllPaymentsByApartmentId(apartmentId: number) {
-    const { data } = await httpClient.get<PaymentResponse>(`/payments/admin/apartments/byId/${apartmentId}`);
+    const { data } = await httpClient.get<PageResponse<PaymentResponse>>(`/payments/admin/apartments/byId/${apartmentId}`);
     return data;
 }
 

@@ -23,14 +23,57 @@ export function RequireAuth() {
     return <Outlet />;
 }
 
+export function RequireResident() {
+    const { tokenData } = useAuth();
+    const { realm_access: { roles } } = tokenData;
+    const isAdmin: boolean = roles?.indexOf("ADMIN") > -1;
+    const isResident: boolean = roles?.indexOf("RESIDENT") > -1;
+
+    if (!isResident) {
+        if (isAdmin) {
+            window.location.replace("http://localhost:5173/admin/dashboard");
+            return;
+        }
+
+        window.location.replace("http://localhost:5173/error/rol-no-valido");
+        return;
+    }
+
+    return <Outlet />
+}
+
 export function RequireAdmin() {
 
     const { tokenData } = useAuth();
     const { realm_access: { roles } } = tokenData;
     const isAdmin: boolean = roles?.indexOf("ADMIN") > -1;
+    const isResident: boolean = roles?.indexOf("RESIDENT") > -1;
 
     if (!isAdmin) {
+        if (isResident) {
+            window.location.replace("http://localhost:5173/dashboard");
+            return;
+        }
+
+        window.location.replace("http://localhost:5173/error/rol-no-valido");
+        return;
+    }
+
+    return <Outlet />;
+}
+
+export function RequireNoRol() {
+
+    const { tokenData } = useAuth();
+    const { realm_access: { roles } } = tokenData;
+    const isAdmin: boolean = roles?.indexOf("ADMIN") > -1;
+    const isResident: boolean = roles?.indexOf("RESIDENT") > -1;
+
+    if (isResident) {
         window.location.replace("http://localhost:5173/dashboard");
+        return;
+    } else if (isAdmin) {
+        window.location.replace("http://localhost:5173/error/rol-no-valido");
         return;
     }
 

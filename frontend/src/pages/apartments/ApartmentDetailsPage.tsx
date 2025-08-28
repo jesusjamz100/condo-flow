@@ -1,6 +1,6 @@
 import { Navigate, useParams } from "react-router";
-import PageTitle from "../../../components/PageTitle";
-import ApartmentDetails from "../../../features/apartments/components/ApartmentDetails";
+import PageTitle from "../../components/PageTitle";
+import ApartmentDetails from "../../features/apartments/components/ApartmentDetails";
 
 
 const ApartmentDetailsPage = ({isAdmin}: {isAdmin: boolean}) => {

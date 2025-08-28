@@ -24,6 +24,12 @@ public class Resident extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String keycloakUserId;
 
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
+
     @Column(length = 9, unique = true)
     @Pattern(
             regexp = "^[VE]\\\\d{8}$",
