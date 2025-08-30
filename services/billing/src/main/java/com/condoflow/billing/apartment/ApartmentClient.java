@@ -28,4 +28,10 @@ public interface ApartmentClient {
             @PathVariable("apartmentId") Integer apartmentId,
             @RequestParam(name = "invoiceAmount") BigDecimal amount
     );
+
+    @GetMapping("/myApartments")
+    PageResponse<ApartmentResponse> getMyApartments(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+    );
 }

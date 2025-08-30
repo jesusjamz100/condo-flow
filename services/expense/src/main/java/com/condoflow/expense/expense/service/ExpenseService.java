@@ -8,7 +8,7 @@ import com.condoflow.expense.expense.dto.ExpenseResponse;
 import java.time.LocalDate;
 
 public interface ExpenseService {
-    PageResponse<ExpenseResponse> findAllExpenses(int page, int size, LocalDate startDate, LocalDate endDate);
+    PageResponse<ExpenseResponse> findAllExpenses(int page, int size, Boolean billed, LocalDate startDate, LocalDate endDate);
 
     ExpenseResponse findExpenseById(Integer expenseId);
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { Link } from "react-router";
+import { Button, Card, CardContent, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Add, Close } from "@mui/icons-material";
 import type { ResidentResponse, ApartmentResponse, PageResponse, PaymentResponse } from "../../../types/api";
 import { getApartmentById, getApartmentResidents, getMyApartmentResidents, getOneOfMyApartments, removeResidentFromApartment } from "../api";
 import Loading from "../../../components/Loading";
@@ -52,7 +53,10 @@ const ApartmentDetails = ({apartmentId, isAdmin} : ApartmentDetailsProps) => {
             <div className="flex flex-col gap-5 w-full">
                 <div className="flex">
                     <div className="w-full flex flex-col gap-4">
-                        <p className="text-lg">Torre {apartment?.tower}</p>
+                        <p className="text-lg">
+                            <span className="font-semibold">Torre: </span>
+                            {apartment?.tower}
+                        </p>
                         <p className="text-lg">
                             <span className="font-semibold">Código: </span>
                             {apartment?.code}
@@ -66,7 +70,14 @@ const ApartmentDetails = ({apartmentId, isAdmin} : ApartmentDetailsProps) => {
                         </p>
                     </div>
                     <div className="flex flex-col gap-4 w-full">
-                        <p className="text-lg font-semibold">Residentes</p>
+                        <div className="flex gap-2">
+                            <p className="text-lg font-semibold">Residentes</p>
+                            { isAdmin ? 
+                                <Link to={`/admin/dashboard/apartamentos/${apartmentId}/residente/agregar`}>
+                                    <Button variant="outlined" color="success" size="small"><Add /></Button>
+                                </Link>
+                            : <></> }
+                        </div>
                         <div className="flex gap-2 justify-stretch">
                             {residents.length > 0 ? residents.map(r => {return (
                                 <>

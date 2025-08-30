@@ -138,7 +138,7 @@ const ApartmentForm = () => {
                         <MenuItem value="" disabled>Seleccionar Número de Apartamento</MenuItem>
                         {[...Array(4)].map((_, i) => (
                             <MenuItem key={i + 1} value={i + 1}>
-                                Piso {i + 1}
+                                Número {i + 1}
                             </MenuItem>
                         ))}
                     </Select>

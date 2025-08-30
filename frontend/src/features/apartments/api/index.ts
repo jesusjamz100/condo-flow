@@ -17,6 +17,11 @@ export async function getMyApartmentResidents(apartmentId: number) {
     return data;
 }
 
+export async function getResidentFromMyApartment(apartmentId: number, residentId: number) {
+    const { data } = await httpClient.get<ResidentResponse>(`/apartments/myApartments/${apartmentId}/residents/${residentId}`);
+    return data;
+}
+
 // Admin
 export async function getAllApartments(page: number = 0, size: number = 10, tower?: string) {
     const { data } = await httpClient.get<PageResponse<ApartmentResponse>>(`/apartments/admin?page=${page}&size=${size}${tower ? "&tower="+ tower : ''}`);

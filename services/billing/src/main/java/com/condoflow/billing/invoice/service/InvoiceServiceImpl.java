@@ -6,9 +6,13 @@ import com.condoflow.billing.expense.ExpenseClient;
 import com.condoflow.billing.expense.ExpenseResponse;
 import com.condoflow.billing.invoice.Invoice;
 import com.condoflow.billing.invoice.InvoiceRepository;
+import com.condoflow.billing.invoice.dto.InvoiceResponse;
 import com.condoflow.billing.payment.PaymentClient;
 import com.condoflow.billing.payment.PaymentResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +36,73 @@ public class InvoiceServiceImpl implements InvoiceService {
     private static final BigDecimal TEN_PERCENT = new BigDecimal("0.10");
     private static final BigDecimal TWO = new BigDecimal("2");
     private static final BigDecimal FOUR = new BigDecimal("4");
+
+    @Override
+    public List<InvoiceResponse> getMyInvoices(Integer apartmentId, LocalDate startDate, LocalDate endDate) {
+        List<ApartmentResponse> apartments = apartmentClient.getMyApartments(0, 250).getContent();
+        List<Integer> apartmentIds = apartments.stream()
+                .map(ApartmentResponse::id)
+                .toList();
+
+        if (apartmentIds.isEmpty()) {
+            return List.of();
+        }
+
+        Specification<Invoice> spec = Specification.allOf(
+                byApartmentIdIn(apartmentIds),
+                apartmentId != null ? byApartmentId(apartmentId) : null,
+                (startDate != null && endDate != null) ? byCreatedBetween(startDate, endDate) : null,
+                (startDate != null && endDate == null) ? byCreatedAfter(startDate) : null,
+                (startDate == null && endDate != null) ? byCreatedBefore(endDate) : null
+        );
+
+        List<Invoice> invoices = repository.findAll(spec);
+
+        return invoices.stream()
+                .map(invoice -> new InvoiceResponse(
+                        invoice.getId(),
+                        invoice.getAmount(),
+                        invoice.getDiscountAmount(),
+                        invoice.getPenaltyAmount(),
+                        invoice.getFinalAmount(),
+                        invoice.getApartmentId(),
+                        invoice.getPeriod(),
+                        invoice.getCreatedDate(),
+                        invoice.getLastModifiedDate()
+                ))
+                .toList();
+    }
+
+    @Override
+    public InvoiceResponse getMyInvoiceById(Integer invoiceId) {
+        List<ApartmentResponse> apartments = apartmentClient.getMyApartments(0, 250).getContent();
+        List<Integer> apartmentIds = apartments.stream()
+                .map(ApartmentResponse::id)
+                .toList();
+
+        if (apartmentIds.isEmpty()) {
+            throw new AccessDeniedException("No tiene apartamentos asignados");
+        }
+
+        Invoice invoice = repository.findById(invoiceId)
+                .orElseThrow(() -> new EntityNotFoundException("Invoice no encontrado"));
+
+        if (!apartmentIds.contains(invoice.getApartmentId())) {
+            throw new AccessDeniedException("No tiene permiso para ver este invoice");
+        }
+
+        return new InvoiceResponse(
+                invoice.getId(),
+                invoice.getAmount(),
+                invoice.getDiscountAmount(),
+                invoice.getPenaltyAmount(),
+                invoice.getFinalAmount(),
+                invoice.getApartmentId(),
+                invoice.getPeriod(),
+                invoice.getCreatedDate(),
+                invoice.getLastModifiedDate()
+        );
+    }
 
     @Override
     @Transactional
@@ -118,5 +189,73 @@ public class InvoiceServiceImpl implements InvoiceService {
         for (ExpenseResponse expense : expenses) {
             expenseClient.makeExpenseBilled(expense.id());
         }
+    }
+
+    @Override
+    public List<InvoiceResponse> getAllInvoices(Integer apartmentId, LocalDate startDate, LocalDate endDate) {
+
+        Specification<Invoice> spec = Specification.allOf(
+                apartmentId != null ? byApartmentId(apartmentId) : null,
+                (startDate != null && endDate != null) ? byCreatedBetween(startDate, endDate) : null,
+                (startDate != null && endDate == null) ? byCreatedAfter(startDate) : null,
+                (startDate == null && endDate != null) ? byCreatedBefore(endDate) : null
+        );
+
+        List<Invoice> invoices = repository.findAll(spec);
+
+        return invoices.stream()
+                .map(invoice -> new InvoiceResponse(
+                        invoice.getId(),
+                        invoice.getAmount(),
+                        invoice.getDiscountAmount(),
+                        invoice.getPenaltyAmount(),
+                        invoice.getFinalAmount(),
+                        invoice.getApartmentId(),
+                        invoice.getPeriod(),
+                        invoice.getCreatedDate(),
+                        invoice.getLastModifiedDate()
+                ))
+                .toList();
+    }
+
+    @Override
+    public InvoiceResponse getInvoiceById(Integer invoiceId) {
+        Invoice invoice = repository.findById(invoiceId)
+                .orElseThrow(() -> new EntityNotFoundException("Invoice no encontrado"));
+        return new InvoiceResponse(
+                invoice.getId(),
+                invoice.getAmount(),
+                invoice.getDiscountAmount(),
+                invoice.getPenaltyAmount(),
+                invoice.getFinalAmount(),
+                invoice.getApartmentId(),
+                invoice.getPeriod(),
+                invoice.getCreatedDate(),
+                invoice.getLastModifiedDate()
+        );
+    }
+
+    private Specification<Invoice> byApartmentIdIn(List<Integer> apartmentIds) {
+        return (root, query, cb) -> root.get("apartmentId").in(apartmentIds);
+    }
+
+    private Specification<Invoice> byApartmentId(Integer apartmentId) {
+        return (root, query, cb) -> cb.equal(root.get("apartmentId"), apartmentId);
+    }
+
+    private Specification<Invoice> byCreatedBetween(LocalDate startDate, LocalDate endDate) {
+        return (root, query, cb) -> cb.between(
+                root.get("createdDate"),
+                startDate.atStartOfDay(),
+                endDate.plusDays(1).atStartOfDay()
+        );
+    }
+
+    private Specification<Invoice> byCreatedAfter(LocalDate startDate) {
+        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get("createdDate"), startDate.atStartOfDay());
+    }
+
+    public static Specification<Invoice> byCreatedBefore(LocalDate end) {
+        return (root, query, cb) -> cb.lessThan(root.get("createdDate"), end.plusDays(1).atStartOfDay());
     }
 }

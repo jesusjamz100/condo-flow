@@ -17,6 +17,8 @@ public interface ApartmentService {
 
     List<ResidentResponse> findResidentsByApartmentId(Jwt jwt, int apartmentId);
 
+    ResidentResponse findResidentFromMyApartments(Jwt jwt, Integer apartmentId, Integer residentId);
+
     PageResponse<ApartmentResponse> findAllApartments(int page, int size, Tower tower);
 
     ApartmentResponse findApartmentById(int apartmentId);

@@ -76,7 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PageResponse<PaymentResponse> findMyPaymentsByApartment(Integer apartmentId, int page, int size, PaymentType type) {
         ResidentResponse resident = residentClient.getMe()
                 .orElseThrow(() -> new RuntimeException("Resident Not Found"));
-        ApartmentResponse apartment = apartmentClient.findApartmentById(apartmentId)
+        ApartmentResponse apartment = apartmentClient.findMyApartmentById(apartmentId)
                 .orElseThrow(() -> new RuntimeException("Apartment Not Found"));
         boolean hasRelation = resident.apartmentResidents().stream()
                 .anyMatch(ar ->

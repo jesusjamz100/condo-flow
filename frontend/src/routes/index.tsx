@@ -13,6 +13,13 @@ import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import AdminLayout from "../layouts/AdminLayout";
 import NotValidRolePage from "../pages/NotValidRolePage";
 import ApartmentCreatePage from "../pages/apartments/ApartmentCreatePage";
+import AddResidentToApartmentPage from "../pages/apartments/AddResidentToApartmentPage";
+import ExpenseCreatePage from "../pages/expenses/ExpenseCreatePage";
+import ExpenseDetailsPage from "../pages/expenses/ExpenseDetailsPage";
+import ExpensesPage from "../pages/expenses/ExpensesPage";
+import InvoicesPage from "../pages/invoices/InvoicesPage";
+import InvoiceDetailsPage from "../pages/invoices/InvoiceDetailsPage";
+import InvoiceCreatePage from "../pages/invoices/InvoiceCreatePage";
 
 export function AppRoutes() {
     return (
@@ -28,6 +35,8 @@ export function AppRoutes() {
                             <Route path="/dashboard/pagos" element={<PaymentsPage isAdmin={false} />} />
                             <Route path="/dashboard/pagos/:paymentId" element={<PaymentDetailsPage isAdmin={false} />} />
                             <Route path="/dashboard/pagos/crear" element={<PaymentRegisterPage />} />
+                            <Route path="/dashboard/facturas" element={<InvoicesPage isAdmin={false} />} />
+                            <Route path="/dashboard/facturas/:invoiceId" element={<InvoiceDetailsPage isAdmin={false} />} />
                         </Route>
                         <Route path="/" element={<Navigate to="/dashboard" replace />} />
                     </Route>
@@ -37,8 +46,15 @@ export function AppRoutes() {
                             <Route path="/admin/dashboard/apartamentos" element={<ApartmentsPage isAdmin={true} />} />
                             <Route path="/admin/dashboard/apartamentos/:apartmentId" element={<ApartmentDetailsPage isAdmin={true} />} />
                             <Route path="/admin/dashboard/apartamentos/crear" element={<ApartmentCreatePage />} />
+                            <Route path="/admin/dashboard/apartamentos/:apartmentId/residente/agregar" element={ <AddResidentToApartmentPage /> } />
                             <Route path="/admin/dashboard/pagos" element={<PaymentsPage isAdmin={true} />} />
                             <Route path="/admin/dashboard/pagos/:paymentId" element={<PaymentDetailsPage isAdmin={true} />} />
+                            <Route path="/admin/dashboard/gastos" element={<ExpensesPage />} />
+                            <Route path="/admin/dashboard/gastos/:expenseId" element={<ExpenseDetailsPage />} />
+                            <Route path="/admin/dashboard/gastos/crear" element={<ExpenseCreatePage />} />
+                            <Route path="/admin/dashboard/facturas" element={<InvoicesPage isAdmin={true} />} />
+                            <Route path="/admin/dashboard/facturas/:invoiceId" element={<InvoiceDetailsPage isAdmin={true} />} />
+                            <Route path="/admin/dashboard/facturas/generar" element={<InvoiceCreatePage />} />
                         </Route>
                         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
                     </Route>

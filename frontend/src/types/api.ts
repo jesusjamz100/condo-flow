@@ -80,6 +80,18 @@ export interface PaymentResponse {
     createdDate: string
 }
 
+export interface InvoiceResponse {
+    id: number,
+    amount: number,
+    discountAmount: number,
+    penaltyAmount: number,
+    finalAmount: number,
+    apartmentId: number,
+    period: string,
+    createdDate: string,
+    lastModifiedDate: string
+}
+
 export interface ResidentRequest {
     id: number | null,
     keycloakUserId: string,
@@ -111,5 +123,5 @@ export interface ExpenseRequest {
     description: string,
     amount: number,
     scopeType: string,
-    applicableTowers: Set<string>
+    applicableTowers: string[]
 }

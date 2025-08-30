@@ -21,6 +21,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +33,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public PageResponse<ExpenseResponse> findAllExpenses(
             int page, int size,
-            LocalDate startDate, LocalDate endDate
+            Boolean billed, LocalDate startDate, LocalDate endDate
     ) {
 
         Specification<Expense> spec = Specification.allOf(
+                (billed != null ? byBilled(billed) : null),
                 (startDate != null && endDate != null) ? byCreatedBetween(startDate, endDate) : null,
                 (startDate != null && endDate == null) ? byCreatedAfter(startDate) : null,
                 (startDate == null && endDate != null) ? byCreatedBefore(endDate) : null
@@ -68,7 +70,12 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     @Transactional
     public void createExpense(ExpenseRequest request) {
-        Set<Tower> normalizedTowers = normalizeApplicableTowers(request.scopeType(), request.applicableTowers());
+        Set<Tower> towers = request.applicableTowers().stream()
+                .map(Tower::valueOf)
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(Tower.class)));
+
+        Set<Tower> normalizedTowers = normalizeApplicableTowers(request.scopeType(), towers);
+
         Expense expense = mapper.toExpense(request, normalizedTowers);
         repository.save(expense);
     }
@@ -81,7 +88,11 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         mergeExpense(expense, request);
 
-        Set<Tower> normalizedTowers = normalizeApplicableTowers(request.scopeType(), request.applicableTowers());
+        Set<Tower> towers = request.applicableTowers().stream()
+                .map(Tower::valueOf)
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(Tower.class)));
+
+        Set<Tower> normalizedTowers = normalizeApplicableTowers(request.scopeType(), towers);
         expense.setApplicableTowers(normalizedTowers);
 
         repository.save(expense);
@@ -153,6 +164,10 @@ public class ExpenseServiceImpl implements ExpenseService {
                 expense.setAmount(request.amount());
             }
         }
+    }
+
+    public static Specification<Expense> byBilled(Boolean billed) {
+        return (root, query, cb) -> cb.equal(root.get("billed"), billed);
     }
 
     public static Specification<Expense> byCreatedBetween(LocalDate startDate, LocalDate endDate) {

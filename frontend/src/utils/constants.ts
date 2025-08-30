@@ -8,7 +8,7 @@ export const NAVBAR_PUBLIC_ITEMS: Array<Array<string>> = [
 
 export const NAVBAR_ADMIN_ITEMS: Array<Array<string>> = [
     ["Dashboard", "/admin/dashboard"],
-    ["Residentes", "/admin/dashboard/residentes"],
+    // ["Residentes", "/admin/dashboard/residentes"],
     ["Apartamentos", "/admin/dashboard/apartamentos"],
     ["Pagos", "/admin/dashboard/pagos"],
     ["Gastos", "/admin/dashboard/gastos"],

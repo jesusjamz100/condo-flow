@@ -20,30 +20,31 @@ const PaymentsList = ({isAdmin}: PaymentsListProps) => {
     const [endDate, setEndDate] = useState<string>("");
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                if (isAdmin) {
-                    const data = await getAllPayments(
-                        0, 100000,
-                        typeFilter || undefined,
-                        approvedFilter !== "" ? (approvedFilter === "true" ? true : false) : undefined,
-                        startDate || undefined,
-                        endDate || undefined
-                    );
-                    setPayments(data.content ?? []);
-                } else {
-                    const data = await getAllMyPayments();
-                    setPayments(data.content ?? []);
-                }
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
+    const fetchData = async () => {
+        try {
+            if (isAdmin) {
+                const data = await getAllPayments(
+                    0, 100000,
+                    typeFilter || undefined,
+                    approvedFilter !== "" ? (approvedFilter === "true" ? true : false) : undefined,
+                    startDate || undefined,
+                    endDate || undefined
+                );
+                setPayments(data.content ?? []);
+            } else {
+                const data = await getAllMyPayments();
+                setPayments(data.content ?? []);
             }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
         }
+    }
+
+    useEffect(() => {
         fetchData();
-    }, [approvedFilter, endDate, isAdmin, startDate, typeFilter]);
+    }, [isAdmin]);
 
     const handleApproveClick = async (paymentId: number) => {
         await approvePayment(paymentId);
@@ -105,6 +106,9 @@ const PaymentsList = ({isAdmin}: PaymentsListProps) => {
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                 />
+                <Button variant="contained" size="small" onClick={fetchData}>
+                    Filtrar
+                </Button>
             </div>
         )}
             {payments.length < 1 ? (<p>No hay Pagos</p>) : (
@@ -134,19 +138,28 @@ const PaymentsList = ({isAdmin}: PaymentsListProps) => {
                                     <TableCell>{payment.reference ? payment.reference : "N/A"}</TableCell>
                                     <TableCell>
                                         {isAdmin ?
-                                        <>
-                                            <ButtonGroup variant="text" aria-label="Botones de Acción">
-                                                <Link to={`/admin/dashboard/pagos/${payment.id}`}>
-                                                    <Button size="small" startIcon={<Lightbulb />}>Detalles</Button>
+                                            <>
+                                                {payment.approved ? <>
+                                                    <Link to={`/admin/dashboard/pagos/${payment.id}`}>
+                                                        <Button size="small" startIcon={<Lightbulb />}>Detalles</Button>
+                                                    </Link>
+                                                </> :
+                                                    <ButtonGroup variant="text" aria-label="Botones de Acción">
+                                                        <Link to={`/admin/dashboard/pagos/${payment.id}`}>
+                                                            <Button size="small" startIcon={<Lightbulb />}>
+                                                                Detalles
+                                                            </Button>
+                                                        </Link>
+                                                        <Button onClick={() => handleApproveClick(payment.id)} startIcon={<Done />} size="small">
+                                                            Aprobar
+                                                        </Button> 
+                                                    </ButtonGroup>
+                                                }
+                                            </> : <>
+                                                <Link to={`/dashboard/pagos/${payment.id}`}>
+                                                    <Button variant="outlined" size="small" startIcon={<Lightbulb />}>Detalles</Button>
                                                 </Link>
-                                                {!payment.approved ? <Button onClick={() => handleApproveClick(payment.id)} startIcon={<Done />} size="small">Aprobar</Button> : <></>}
-                                                
-                                            </ButtonGroup>
-                                        </> : <>
-                                            <Link to={`/dashboard/pagos/${payment.id}`}>
-                                                <Button variant="outlined" size="small" startIcon={<Lightbulb />}>Detalles</Button>
-                                            </Link>
-                                        </>}
+                                            </>}
                                     </TableCell>
                                 </TableRow>
                             )})}

@@ -2,17 +2,18 @@ import httpClient from "../../../services/httpClient";
 import type { ExpenseRequest, ExpenseResponse, PageResponse } from "../../../types/api";
 
 // Admin
-export async function getAllExpenses(page: number = 0, size: number = 10, startDate?: string, endDate?: string) {
+export async function getAllExpenses(page: number = 0, size: number = 10, startDate?: string, endDate?: string, billed?:boolean) {
     const { data } = await httpClient.get<PageResponse<ExpenseResponse>>(
         `/expenses/admin?page=${page}&size=${size}`+
         `${startDate ? "&startDate="+ startDate : ""}`+
-        `${endDate ? "&endDate="+ endDate : ""}`
+        `${endDate ? "&endDate="+ endDate : ""}`+
+        `${billed !== undefined ? "&billed="+ billed : ''}`
     )
     return data;
 }
 
 export async function getExpenseById(expenseId: number) {
-    const { data } = await httpClient.get(`/expense/admin/${expenseId}`);
+    const { data } = await httpClient.get(`/expenses/admin/${expenseId}`);
     return data;
 }
 

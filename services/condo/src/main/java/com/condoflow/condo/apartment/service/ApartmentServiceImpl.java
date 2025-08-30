@@ -94,6 +94,19 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
+    public ResidentResponse findResidentFromMyApartments(Jwt jwt, Integer apartmentId, Integer residentId) {
+        Resident me = residentRepository.findByKeycloakUserId(jwt.getSubject())
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with keycloak user ID:: " + jwt.getSubject()));
+        boolean belongs = apartmentRepository.existsByIdAndApartmentResidentsResidentId(apartmentId, me.getId());
+        if (!belongs) {
+            throw new ApartmentNotFoundException("No apartment with that resident ID");
+        }
+        Resident resident = residentRepository.findById(residentId)
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with ID:: " + residentId));
+        return residentMapper.toResidentResponse(resident);
+    }
+
+    @Override
     public PageResponse<ApartmentResponse> findAllApartments(int page, int size, Tower tower) {
         Specification<Apartment> spec = Specification
                 .allOf(

@@ -47,6 +47,15 @@ public class ApartmentController {
         return ResponseEntity.ok(service.findResidentsByApartmentId(jwt, apartmentId));
     }
 
+    @GetMapping("/myApartments/{apartmentId}/residents/{residentId}")
+    public ResponseEntity<ResidentResponse> getResidentFromMyApartments(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable("apartmentId") Integer apartmentId,
+            @PathVariable("residentId") Integer residentId
+    ) {
+        return ResponseEntity.ok(service.findResidentFromMyApartments(jwt, apartmentId, residentId));
+    }
+
     // ADMIN ROUTES
     @GetMapping("/admin")
     public ResponseEntity<PageResponse<ApartmentResponse>> findAllApartments(
