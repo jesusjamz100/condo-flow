@@ -1,13 +1,13 @@
 
 export const NAVBAR_PUBLIC_ITEMS: Array<Array<string>> = [
-    ["Dashboard", "/dashboard"],
+    ["Panel", "/dashboard"],
     ["Apartamentos", "/dashboard/apartamentos"],
     ["Pagos", "/dashboard/pagos"],
     ["Facturas", "/dashboard/facturas"],
 ];
 
 export const NAVBAR_ADMIN_ITEMS: Array<Array<string>> = [
-    ["Dashboard", "/admin/dashboard"],
+    ["Panel", "/admin/dashboard"],
     // ["Residentes", "/admin/dashboard/residentes"],
     ["Apartamentos", "/admin/dashboard/apartamentos"],
     ["Pagos", "/admin/dashboard/pagos"],

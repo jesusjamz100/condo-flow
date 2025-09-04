@@ -8,7 +8,7 @@ const AdminDashboardPage = () => {
     return (
         <>
             <Greeting />
-            <PageTitle title="Dashboard" />
+            <PageTitle title="Panel Administrador" />
             <AdminSummary />
         </>
     );

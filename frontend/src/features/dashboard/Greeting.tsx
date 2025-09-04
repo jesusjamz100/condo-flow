@@ -17,9 +17,11 @@ const Greeting = () => {
         }, []);
     
     return (
-        <>
-            <p>Hola {me?.firstName}</p>
-        </>
+        <div className="">
+            <h1 className="text-2xl font-bold text-gray-800">
+                Hola {me?.firstName || "Administrador"},
+            </h1>
+        </div>
     );
 }
 

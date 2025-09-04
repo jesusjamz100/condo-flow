@@ -31,18 +31,32 @@ const MonthlyExpensesChart = () => {
     return (
         <>
             <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <YAxis />
+                <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                    <YAxis tick={{ fontSize: 12 }} />
                     <XAxis
                         dataKey="month"
                         tickFormatter={(value) => dayjs(value).format("MMM")}
+                        tick={{ fontSize: 12 }}
                     />
                     <Tooltip
+                        contentStyle={{
+                        backgroundColor: "#fff",
+                        border: "1px solid #ddd",
+                        borderRadius: "6px",
+                        padding: "8px"
+                        }}
                         labelFormatter={(value) => dayjs(value).format("MMMM YYYY")}
                         formatter={(value: number) => [`$${value.toFixed(2)}`, "Total"]}
                     />
-                    <Line type="monotone" dataKey="total" stroke="#1976d2" strokeWidth={2} />
+                    <Line
+                        type="monotone"
+                        dataKey="total"
+                        stroke="#1976d2"
+                        strokeWidth={2}
+                        dot={{ r: 4, strokeWidth: 2, fill: "#1976d2" }}
+                        activeDot={{ r: 6 }}
+                    />
                 </LineChart>
             </ResponsiveContainer>
         </>

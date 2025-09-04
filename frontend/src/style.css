@@ -1,35 +1,59 @@
+/* @import "tailwindcss";
+
+@layer components {
+  .navbar {
+    @apply bg-white text-gray-800 flex flex-col gap-10 px-6 py-8 items-center h-screen w-[250px] fixed shadow-lg rounded-r-2xl;
+  }
+  .navbar-list {
+    @apply flex flex-col gap-3 w-full;
+  }
+  .navlink {
+    @apply block px-4 py-2 rounded-lg transition-all duration-200 hover:bg-gray-100 hover:shadow-sm w-full;
+  }
+  .active-navlink {
+    @apply bg-blue-50 text-blue-700 font-semibold rounded-lg shadow-inner w-full;
+  }
+  .logo-title {
+    @apply text-3xl font-extrabold tracking-wide;
+  }
+  .index-view {
+    @apply flex flex-col bg-gray-50 p-10 w-full gap-5 ml-[250px] min-h-screen;
+  }
+} */
+
 @import "tailwindcss";
 
 @layer components {
-    .not-found {
-        @apply flex flex-col gap-2 justify-center p-5 w-full items-center;
-    }
+  .navbar {
+    @apply bg-white text-gray-800 flex-col gap-10 px-6 py-8 items-center h-screen w-[250px] drop-shadow-lg rounded-r-2xl transition-transform duration-300;
+  }
+  .navbar-list {
+    @apply flex flex-col gap-3 w-full;
+  }
+  .navlink {
+    @apply block px-4 py-2 rounded-lg transition-all duration-200 hover:bg-gray-100 hover:shadow-sm w-full;
+  }
+  .active-navlink {
+    @apply bg-blue-50 text-blue-700 font-semibold rounded-lg shadow-inner w-full;
+  }
+  .logo-title {
+    @apply text-3xl font-extrabold tracking-wide;
+  }
+  .index-view {
+    @apply flex flex-col bg-gray-50 p-4 lg:p-10 w-full gap-5 min-h-screen transition-all duration-300 lg:ml-[250px];
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+}
 
-    .navbar {
-        @apply bg-gray-200 flex flex-col gap-10 px-10 py-8 items-center h-screen w-[250px] fixed;
-    }
+body {
+  @apply bg-gray-50;
+}
 
-    .navbar-list {
-        @apply flex flex-col gap-8;
-    }
+html, body {
+  overflow-x: hidden;
+}
 
-    .active-navlink {
-        @apply font-bold underline;
-    }
-
-    .navlink {
-        @apply hover:underline;
-    }
-
-    .logo-title {
-        @apply text-2xl font-bold;
-    }
-
-    .card {
-        @apply bg-white p-5 w-fit rounded-2xl shadow;
-    }
-
-    .index-view {
-        @apply flex flex-col bg-gray-100 p-10 w-full gap-5 ml-[250px] h-screen;
-    }
+#root {
+  overflow-x: hidden;
 }

@@ -2,10 +2,10 @@ import { Outlet } from "react-router";
 import AdminNavbar from "./AdminNavbar";
 
 
-const Layout = () => {
+const AdminLayout = () => {
     return (
         <>
-            <div className="flex w-screen">
+            <div className="flex w-full overflow-x-hidden">
                 <AdminNavbar />
                 <div className="index-view">
                     <Outlet />
@@ -15,4 +15,4 @@ const Layout = () => {
     );
 }
 
-export default Layout;
+export default AdminLayout;

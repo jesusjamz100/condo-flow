@@ -7,7 +7,7 @@ const DashboardPage = () => {
     return (
         <>
             <Greeting />
-            <PageTitle title="Dashboard" />
+            <PageTitle title="Panel Residente" />
             <SummaryView />
         </>
     );

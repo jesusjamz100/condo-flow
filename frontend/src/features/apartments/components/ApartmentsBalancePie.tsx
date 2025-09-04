@@ -23,27 +23,40 @@ const ApartmentsBalancePie = () => {
         fetchData();
     }, [])
 
-    const COLORS = ["#d32f2f", "#388e3c"];
+    const COLORS = ["#ef5350", "#66bb6a"];
 
     return (
         <>
             <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
-                <Pie
-                    data={data}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    label
-                >
-                    {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                </Pie>
-                <Tooltip formatter={(value: number) => [`${value} apartamentos`, "Cantidad"]} />
-                <Legend />
+                    <Pie
+                        data={data}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        label
+                    >
+                        {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                    </Pie>
+                    <Tooltip
+                        contentStyle={{
+                            backgroundColor: "#fff",
+                            border: "1px solid #ddd",
+                            borderRadius: "6px",
+                            padding: "8px"
+                        }}
+                        formatter={(value: number) => [`${value} apartamentos`, "Cantidad"]}
+                    />
+                    <Legend
+                        wrapperStyle={{
+                        fontSize: "0.85rem",
+                        paddingTop: "10px"
+                        }}
+                    />
                 </PieChart>
             </ResponsiveContainer>
         </>

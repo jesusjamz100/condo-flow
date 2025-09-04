@@ -5,6 +5,7 @@ import Loading from "../../../components/Loading";
 import { getApartmentById, getOneOfMyApartments, getResidentFromMyApartment } from "../../apartments/api";
 import formatDate from "../../../utils/formatDate";
 import { getResidentById } from "../../residents/api";
+import { Card } from "@mui/material";
 
 interface PaymentDetailsProps {
     paymentId: number,
@@ -43,36 +44,80 @@ const PaymentDetails = ({paymentId, isAdmin} : PaymentDetailsProps) => {
 
     return (
         <>
-            <div className="flex flex-col gap-5 w-full">
-                <p className="text-lg">
-                    <span className="font-semibold">Fecha: </span>
-                    { payment ? formatDate(payment.createdDate) : "Cargando" }
-                </p>
-                <p className="text-lg">
-                    <span className="font-semibold">Cantidad: </span>
-                    ${payment?.amount}
-                </p>
-                <p className="text-lg">
-                    <span className="font-semibold">Tipo: </span>
-                    {payment?.type === "CASH" ? "Efectivo" : "Transferencia"}
-                </p>
-                <p className="text-lg">
-                    <span className="font-semibold">Referencia: </span>
-                    {payment?.reference ? payment?.reference : "N/A"}
-                </p>
-                <p className="text-lg">
-                    <span className="font-semibold">Apartamento: </span>
-                    {apartment?.code}
-                </p>
-                <p className="text-lg">
-                    <span className="font-semibold">Creado por: </span>
-                    {resident?.firstName} {resident?.lastName}
-                </p>
-                <p className="text-lg">
-                    <span className="font-semibold">Aprobado: </span>
-                    {payment?.approved ? "Sí" : "No"}
-                </p>
-            </div>
+            <Card
+                sx={{
+                    borderRadius: 2,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                    p: 3,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 3
+                }}
+            >
+                <div>
+                    <p style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: 8 }}>
+                        Detalles del Pago
+                    </p>
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+                            gap: "0.75rem"
+                        }}
+                    >
+                        <div>
+                            <span style={{ color: "#6b7280", fontSize: "0.85rem" }}>Fecha</span>
+                            <p style={{ fontWeight: 500 }}>
+                                {payment ? formatDate(payment.createdDate) : "Cargando"}
+                            </p>
+                        </div>
+                        <div>
+                            <span style={{ color: "#6b7280", fontSize: "0.85rem" }}>Cantidad</span>
+                            <p
+                                style={{
+                                    fontWeight: 600,
+                                    color: (payment?.amount ?? 0) < 0 ? "#dc2626" : "#16a34a"
+                                }}
+                            >
+                                ${payment?.amount}
+                            </p>
+                        </div>
+                        <div>
+                            <span style={{ color: "#6b7280", fontSize: "0.85rem" }}>Tipo</span>
+                            <p style={{ fontWeight: 500 }}>
+                                {payment?.type === "CASH" ? "Efectivo" : "Transferencia"}
+                            </p>
+                        </div>
+                        <div>
+                            <span style={{ color: "#6b7280", fontSize: "0.85rem" }}>Referencia</span>
+                            <p style={{ fontWeight: 500 }}>
+                                {payment?.reference || "N/A"}
+                            </p>
+                        </div>
+                        <div>
+                            <span style={{ color: "#6b7280", fontSize: "0.85rem" }}>Apartamento</span>
+                            <p style={{ fontWeight: 500 }}>{apartment?.code}</p>
+                        </div>
+                        <div>
+                            <span style={{ color: "#6b7280", fontSize: "0.85rem" }}>Creado por</span>
+                            <p style={{ fontWeight: 500 }}>
+                                {resident?.firstName} {resident?.lastName}
+                            </p>
+                        </div>
+                        <div>
+                            <span style={{ color: "#6b7280", fontSize: "0.85rem" }}>Aprobado</span>
+                            <p
+                                style={{
+                                    fontWeight: 600,
+                                    color: payment?.approved ? "#16a34a" : "#dc2626"
+                                }}
+                            >
+                                {payment?.approved ? "Sí" : "No"}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </Card>
         </>
     )
 }

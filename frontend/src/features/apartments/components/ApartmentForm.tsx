@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import { Alert, Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import { TOWERS } from "../../../utils/constants";
 import { useNavigate } from "react-router";
 import type { ApartmentRequest } from "../../../types/api";
@@ -14,6 +14,7 @@ const ApartmentForm = () => {
     const [code, setCode] = useState<string>("");
     const [sqm, setSqm] = useState<number | null>(null);
     const [aliquot, setAliquot] = useState<number | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -27,54 +28,63 @@ const ApartmentForm = () => {
 
     const handleSubmit = async () => {
 
+        if (loading) return;
+
+        // Validaciones
         if (tower === null || !TOWERS.includes(tower)) {
-            setAlert({msg: "Elija una torre válida", error: true});
+            setAlert({ msg: "Elija una torre válida", error: true });
             return;
         }
-
         if (floor === null || floor > 16 || floor < 1 || !Number.isInteger(floor)) {
-            setAlert({msg: "Seleccione un piso válido", error: true});
+            setAlert({ msg: "Seleccione un piso válido", error: true });
             return;
         }
-
-        if (apartmentNumber === null || apartmentNumber > 4 || apartmentNumber < 1 || !Number.isInteger(apartmentNumber)) {
-            setAlert({msg: "Seleccione un número de apartamento válido", error: true});
+        if (
+            apartmentNumber === null ||
+            apartmentNumber > 4 ||
+            apartmentNumber < 1 ||
+            !Number.isInteger(apartmentNumber)
+        ) {
+            setAlert({
+                msg: "Seleccione un número de apartamento válido",
+                error: true
+            });
             return;
         }
-
-        if (code === null || code === "" || code === " ") {
-            setAlert({msg: "Código Inválido", error: true});
+        if (!code.trim()) {
+            setAlert({ msg: "Código inválido", error: true });
             return;
         }
-
         if (sqm === null || sqm > 200 || sqm < 80 || Number.isNaN(sqm)) {
-            setAlert({msg: "Ingrese un valor de área válido", error: true});
+            setAlert({ msg: "Ingrese un valor de área válido", error: true });
             return;
         }
-
         if (aliquot === null || aliquot > 1 || aliquot < 0 || Number.isNaN(aliquot)) {
-            setAlert({msg: "Ingrese un valor de alicuota válido", error: true});
+            setAlert({ msg: "Ingrese un valor de alícuota válido", error: true });
             return;
         }
 
         const apartment: ApartmentRequest = {
             id: null,
-            code: code,
-            tower: tower,
-            sqm: sqm,
-            aliquot: aliquot
-        }     
+            code,
+            tower,
+            sqm,
+            aliquot
+        };
 
         try {
+            setLoading(true);
             await createApartment(apartment);
-            navigate("/admin/dashboard/apartamentos", { replace: true });
+            setAlert({ msg: "Apartamento registrado con éxito", error: false });
+            setTimeout(() => {
+                navigate("/admin/dashboard/apartamentos", { replace: true });
+            }, 2000);
         } catch (error) {
             setAlert({msg: "Hubo un error con la operación", error: true});
-            return;
+        } finally {
+            setLoading(false);
         }
-    }
-
-    const msg = alert?.msg;
+    };
 
     if (alert) {
         setTimeout(() => {
@@ -84,39 +94,56 @@ const ApartmentForm = () => {
 
     return (
         <>
-            {msg && <Alert severity="error">{msg}</Alert>}
-            <Box sx={{display: 'flex', gap: 4}}>
+            {alert && (
+                <Alert
+                    severity={alert.error ? "error" : "success"}
+                    sx={{ mb: 2, width: "100%" }}
+                >
+                    {alert.msg}
+                </Alert>
+            )}
+
+            {/* Primera fila */}
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                    gap: 2,
+                    mb: 2
+                }}
+            >
                 <FormControl fullWidth>
                     <InputLabel id="tower-select-label">Torre</InputLabel>
                     <Select
                         labelId="tower-select-label"
                         value={tower ?? ""}
-                        label="Torre"
-                        onChange={(e) => {
-                            const value: "A" | "B" | "C" | "D" | null = e.target.value;
-                            setTower(value);
-                        }}
+                        onChange={(e) =>
+                            setTower(e.target.value as "A" | "B" | "C" | "D" | null)
+                        }
                     >
-                        <MenuItem value="" disabled>Seleccionar Torre</MenuItem>
-                        {TOWERS.map(t => (
+                        <MenuItem value="" disabled>
+                            Seleccionar Torre
+                        </MenuItem>
+                        {TOWERS.map((t) => (
                             <MenuItem key={t} value={t}>
-                                { t }
+                                {t}
                             </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
+
                 <FormControl fullWidth>
                     <InputLabel id="floor-select-label">Piso</InputLabel>
                     <Select
                         labelId="floor-select-label"
                         value={floor ?? ""}
-                        label="Piso"
-                        onChange={(e) => {
-                            const value = e.target.value as unknown as string;
-                            setFloor(value === "" ? null : Number(value));
-                        }}
+                        onChange={(e) =>
+                            setFloor(!e.target.value ? null : Number(e.target.value))
+                        }
                     >
-                        <MenuItem value="" disabled>Seleccionar Piso</MenuItem>
+                        <MenuItem value="" disabled>
+                            Seleccionar Piso
+                        </MenuItem>
                         {[...Array(16)].map((_, i) => (
                             <MenuItem key={i + 1} value={i + 1}>
                                 Piso {i + 1}
@@ -124,18 +151,23 @@ const ApartmentForm = () => {
                         ))}
                     </Select>
                 </FormControl>
+
                 <FormControl fullWidth>
-                    <InputLabel id="apartment-number-select-label">Número de Apartamento</InputLabel>
+                    <InputLabel id="apartment-number-select-label">
+                        Número de Apartamento
+                    </InputLabel>
                     <Select
                         labelId="apartment-number-select-label"
                         value={apartmentNumber ?? ""}
-                        label="Número de Apartamento"
-                        onChange={(e) => {
-                            const value = e.target.value as unknown as string;
-                            setApartmentNumber(value === "" ? null : Number(value));
-                        }}
+                        onChange={(e) =>
+                            setApartmentNumber(
+                                !e.target.value ? null : Number(e.target.value)
+                            )
+                        }
                     >
-                        <MenuItem value="" disabled>Seleccionar Número de Apartamento</MenuItem>
+                        <MenuItem value="" disabled>
+                            Seleccionar Número de Apartamento
+                        </MenuItem>
                         {[...Array(4)].map((_, i) => (
                             <MenuItem key={i + 1} value={i + 1}>
                                 Número {i + 1}
@@ -143,37 +175,55 @@ const ApartmentForm = () => {
                         ))}
                     </Select>
                 </FormControl>
+
                 <FormControl fullWidth>
-                    <TextField
-                        id=""
-                        value={code}
-                        label="Código"
-                        onChange={(e) => setSqm(e.target.value as unknown as number)}
-                        disabled
-                    />
+                    <TextField label="Código" value={code} disabled />
                 </FormControl>
             </Box>
-            <Box sx={{display: "flex", gap: 4}}>
+
+            {/* Segunda fila */}
+            <Box
+                sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+                gap: 2,
+                mb: 2
+                }}
+            >
                 <FormControl fullWidth>
                     <TextField
-                        id="sqm"
-                        value={sqm}
                         label="Área (m²)"
-                        onChange={(e) => setSqm(e.target.value as unknown as number)}
+                        type="number"
+                        value={sqm ?? ""}
+                        onChange={(e) => setSqm(Number(e.target.value))}
                     />
                 </FormControl>
+
                 <FormControl fullWidth>
                     <TextField
-                        id="sqm"
-                        value={aliquot}
-                        label="Alicuota"
-                        onChange={(e) => setAliquot(e.target.value as unknown as number)}
+                        label="Alícuota"
+                        type="number"
+                        value={aliquot ?? ""}
+                        onChange={(e) => setAliquot(Number(e.target.value))}
                     />
                 </FormControl>
             </Box>
-            <Box sx={{display: "flex"}}>
-                <Button variant="outlined" color="primary" onClick={handleSubmit}>Registrar</Button>
-                {}
+
+            {/* Botón */}
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    sx={{ minWidth: { xs: "100%", sm: "100%", md: 140 }, height: 40 }}
+                >
+                    {loading ? (
+                        <CircularProgress size={20} color="inherit" />
+                    ) : (
+                        "Registrar"
+                    )}
+                </Button>
             </Box>
         </>
     );

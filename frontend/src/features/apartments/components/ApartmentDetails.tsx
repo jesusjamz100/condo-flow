@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { Button, Card, CardContent, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Button, Card, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { Add, Close } from "@mui/icons-material";
 import type { ResidentResponse, ApartmentResponse, PageResponse, PaymentResponse } from "../../../types/api";
 import { getApartmentById, getApartmentResidents, getMyApartmentResidents, getOneOfMyApartments, removeResidentFromApartment } from "../api";
@@ -50,83 +50,171 @@ const ApartmentDetails = ({apartmentId, isAdmin} : ApartmentDetailsProps) => {
 
     return (
         <>
-            <div className="flex flex-col gap-5 w-full">
-                <div className="flex">
-                    <div className="w-full flex flex-col gap-4">
-                        <p className="text-lg">
-                            <span className="font-semibold">Torre: </span>
-                            {apartment?.tower}
-                        </p>
-                        <p className="text-lg">
-                            <span className="font-semibold">Código: </span>
-                            {apartment?.code}
-                        </p>
-                        <p className="text-lg">
-                            <span className="font-semibold">Balance: </span>
-                            ${apartment?.balance}</p>
-                        <p className="text-lg">
-                            <span className="font-semibold">Área: </span>
-                            {apartment?.sqm}m²
-                        </p>
-                    </div>
-                    <div className="flex flex-col gap-4 w-full">
-                        <div className="flex gap-2">
-                            <p className="text-lg font-semibold">Residentes</p>
-                            { isAdmin ? 
-                                <Link to={`/admin/dashboard/apartamentos/${apartmentId}/residente/agregar`}>
-                                    <Button variant="outlined" color="success" size="small"><Add /></Button>
-                                </Link>
-                            : <></> }
+            <Card
+                sx={{
+                    borderRadius: 2,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                    p: 3,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 3
+                }}
+            >
+                <div>
+                    <p style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: 8 }}>
+                        Detalles del Apartamento
+                    </p>
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+                            gap: "0.75rem"
+                        }}
+                    >
+                        <div>
+                            <span style={{ color: "#6b7280", fontSize: "0.85rem" }}>Torre</span>
+                            <p style={{ fontWeight: 500 }}>{apartment?.tower}</p>
                         </div>
-                        <div className="flex gap-2 justify-stretch">
-                            {residents.length > 0 ? residents.map(r => {return (
-                                <>
-                                    <Card>
-                                        <CardContent sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                                            <p>{r.firstName} {r.lastName}</p>
-                                            { isAdmin ? 
-                                                <div onClick={() => handleClickRemoveResident(r.id)}>
-                                                    <Close sx={{ ":hover": { cursor: "pointer" } }} />
-                                                </div>
-                                            : <></> }
-                                        </CardContent>
-                                    </Card>
-                                </>
-                            )}) : <>No Hay Residentes en este apartamento</>}
+                        <div>
+                            <span style={{ color: "#6b7280", fontSize: "0.85rem" }}>Código</span>
+                            <p style={{ fontWeight: 500 }}>{apartment?.code}</p>
+                        </div>
+                        <div>
+                            <span style={{ color: "#6b7280", fontSize: "0.85rem" }}>Balance</span>
+                            <p
+                                style={{
+                                    fontWeight: 600,
+                                    color:
+                                    (apartment?.balance ?? 0) < 0 ? "#dc2626" : "#16a34a"
+                                }}
+                            >
+                                ${apartment?.balance}
+                            </p>
+                        </div>
+                        <div>
+                            <span style={{ color: "#6b7280", fontSize: "0.85rem" }}>Área</span>
+                            <p style={{ fontWeight: 500 }}>{apartment?.sqm} m²</p>
                         </div>
                     </div>
                 </div>
-                <p className="text-2xl font-semibold mt-5 w-full text-center">Últimos Pagos</p>
-                {payments.length > 0 ? (
-                    
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth:650, textAlign:"center"}} aria-label="Apartamentos">
+
+                <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <p style={{ fontWeight: 600 }}>Residentes</p>
+                    {isAdmin && (
+                        <Link to={`/admin/dashboard/apartamentos/${apartmentId}/residente/agregar`}>
+                            <Button variant="outlined" color="success" size="small">
+                                <Add />
+                            </Button>
+                        </Link>
+                    )}
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                        {residents.length > 0 ? (
+                            residents.map((r) => (
+                                <Card
+                                    key={r.id}
+                                    sx={{
+                                        px: 1.5,
+                                        py: 0.5,
+                                        borderRadius: 5,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1,
+                                        backgroundColor: "#f9fafb"
+                                    }}
+                                >
+                                    <span>{r.firstName} {r.lastName}</span>
+                                    {isAdmin && (
+                                        <Close
+                                            fontSize="small"
+                                            sx={{
+                                            ":hover": { cursor: "pointer", color: "error.main" }
+                                            }}
+                                            onClick={() => handleClickRemoveResident(r.id)}
+                                        />
+                                    )}
+                                </Card>
+                            ))
+                        ) : (
+                            <span style={{ color: "#6b7280" }}>No hay residentes</span>
+                        )}
+                    </div>
+                </div>
+            </Card>
+            <Typography
+                variant="h6"
+                sx={{
+                    fontWeight: 600,
+                    color: "#111827",
+                    mb: 1,
+                    textAlign: "left"
+                }}
+            >
+                    Últimos pagos
+            </Typography>
+            {payments.length > 0 ? (
+                <TableContainer
+                        component={Paper}
+                        elevation={0}
+                        sx={{
+                            borderRadius: 2,
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                            overflow: "hidden"
+                        }}
+                    >
+                    <Table sx={{ minWidth: 650 }} aria-label="Últimos pagos">
                         <TableHead>
-                            <TableRow>
-                                <TableCell sx={{fontWeight: "bold"}}>Fecha</TableCell>
-                                <TableCell sx={{fontWeight: "bold"}}>Descripción</TableCell>
-                                <TableCell sx={{fontWeight: "bold"}}>Monto</TableCell>
-                                <TableCell sx={{fontWeight: "bold"}}>Aprobado</TableCell>
-                                <TableCell sx={{fontWeight: "bold"}}>Tipo</TableCell>
-                                <TableCell sx={{fontWeight: "bold"}}>Referencia</TableCell>
+                            <TableRow sx={{ backgroundColor: "#f9fafb" }}>
+                                {["Fecha", "Descripción", "Monto", "Aprobado", "Tipo", "Referencia"].map((head) => (
+                                    <TableCell
+                                        key={head}
+                                        align="center"
+                                        sx={{
+                                            fontWeight: 600,
+                                            fontSize: "0.9rem",
+                                            color: "#374151",
+                                            borderBottom: "1px solid #e5e7eb"
+                                        }}
+                                    >
+                                        {head}
+                                    </TableCell>
+                                ))}
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {payments.map(payment => {return (
-                                <TableRow key={payment.id}>
-                                    <TableCell>{formatDate(payment.createdDate)}</TableCell>
-                                    <TableCell>{payment.description}</TableCell>
-                                    <TableCell>{payment.amount}</TableCell>
-                                    <TableCell>{payment.approved ? "Sí" : "No"}</TableCell>
-                                    <TableCell>{payment.type === "CASH" ? "Efectivo" : "Transferencia"}</TableCell>
-                                    <TableCell>{payment.reference ? payment.reference : "N/A"}</TableCell>
+                            {payments.map((payment) => (
+                                <TableRow
+                                    key={payment.id}
+                                    hover
+                                    sx={{
+                                        "&:last-child td, &:last-child th": { border: 0 },
+                                        transition: "background-color 0.2s ease",
+                                        "&:hover": { backgroundColor: "#f3f4f6" }
+                                    }}
+                                >
+                                    <TableCell align="center">{formatDate(payment.createdDate)}</TableCell>
+                                    <TableCell align="center">{payment.description}</TableCell>
+                                    <TableCell
+                                        align="center"
+                                        sx={{
+                                        color: payment.amount < 0 ? "error.main" : "success.main",
+                                        fontWeight: 500
+                                        }}
+                                    >
+                                        ${payment.amount}
+                                    </TableCell>
+                                    <TableCell align="center">{payment.approved ? "Sí" : "No"}</TableCell>
+                                    <TableCell align="center">
+                                        {payment.type === "CASH" ? "Efectivo" : "Transferencia"}
+                                    </TableCell>
+                                    <TableCell align="center">{payment.reference || "N/A"}</TableCell>
                                 </TableRow>
-                            )})}
+                            ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
-                ) : <>No hay pagos en este apartamento</>}
-            </div>
+            ) : <>No hay pagos en este apartamento</>}
         </>
     )
 }

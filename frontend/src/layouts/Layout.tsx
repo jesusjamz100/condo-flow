@@ -5,7 +5,7 @@ import Navbar from "./Navbar";
 const Layout = () => {
     return (
         <>
-            <div className="flex w-screen">
+            <div className="flex w-full overflow-x-hidden">
                 <Navbar />
                 <div className="index-view">
                     <Outlet />

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, ButtonGroup, Paper, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, ButtonGroup, Paper, FormControl, InputLabel, MenuItem, Select, TablePagination } from "@mui/material";
 import { Delete, Lightbulb } from "@mui/icons-material";
 import type { ApartmentResponse } from "../../../types/api";
 import { deleteApartmentById, getAllApartments, getMyApartments } from "../api";
@@ -18,10 +18,15 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
     const [floorFilter, setFloorFilter] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = isAdmin ? await getAllApartments(0, 300, selectedTower ?? undefined) : await getMyApartments();
+                const data = isAdmin
+                    ? await getAllApartments(0, 300, selectedTower ?? undefined)
+                    : await getMyApartments();
 
                 let filtered = data.content ?? [];
 
@@ -54,6 +59,15 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
         location.reload();
     }
 
+    const handleChangePage = (_: unknown, newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
     if (loading) {
         return <Loading text="Cargando Apartamentos..." />;
     }
@@ -62,13 +76,13 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
         <>
             {isAdmin ? 
                 <>
-                    <div className="flex gap-5">
-                        <FormControl fullWidth sx={{ mb: 2 }}>
+                    <div className="flex flex-col lg:flex-row gap-4">
+                        <FormControl className="flex-3">
                             <InputLabel id="floor-select-label">Filtrar por piso</InputLabel>
                             <Select
                                 labelId="floor-select-label"
+                                label= "Filtrar por piso"
                                 value={floorFilter ?? ""}
-                                label="Filtrar por piso"
                                 onChange={(e) => {
                                     const value = e.target.value as unknown as string;
                                     setFloorFilter(value === "" ? null : Number(value));
@@ -83,7 +97,7 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
                             </Select>
                         </FormControl>
 
-                        <ButtonGroup fullWidth sx={{ mb: 2 }} size="small">
+                        <ButtonGroup variant="outlined" size="small" className="flex-2">
                             <Button
                                 variant={selectedTower === null ? "contained" : "outlined"}
                                 onClick={() => setSelectedTower(null)}
@@ -95,13 +109,13 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
                                     key={tower}
                                     variant={selectedTower === tower ? "contained" : "outlined"}
                                     onClick={() => setSelectedTower(tower)}
-                                    >
+                                >
                                     Torre {tower}
-                                    </Button>
-                                ))}
+                                </Button>
+                            ))}
                         </ButtonGroup>
 
-                        <ButtonGroup fullWidth sx={{ mb: 2 }} size="small">
+                        <ButtonGroup variant="outlined" size="small" className="flex-2">
                             <Button
                                 variant={balanceFilter === "all" ? "contained" : "outlined"}
                                 onClick={() => setBalanceFilter("all")}
@@ -126,44 +140,96 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
             : <></>}
 
             { apartments.length > 0 ?
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth:650, textAlign:"center"}} aria-label="Apartamentos">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Código</TableCell>
-                                <TableCell>Torre</TableCell>
-                                <TableCell>Balance</TableCell>
-                                <TableCell>Acciones</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {apartments.map(apt => {return (
-                                <TableRow key={apt.id}>
-                                    <TableCell>{apt.id}</TableCell>
-                                    <TableCell>{apt.code}</TableCell>
-                                    <TableCell>{apt.tower}</TableCell>
-                                    <TableCell>${apt.balance}</TableCell>
-                                    <TableCell>
-                                        {isAdmin ?
-                                        <>
-                                            <ButtonGroup variant="text" aria-label="Botones de Acción">
-                                                <Link to={`/admin/dashboard/apartamentos/${apt.id}`}>
-                                                    <Button size="small" startIcon={<Lightbulb />}>Detalles</Button>
-                                                </Link>
-                                                <Button onClick={() => handleDeleteClick(apt.id)} startIcon={<Delete />} size="small">Eliminar</Button>
-                                            </ButtonGroup>
-                                        </> : <>
-                                            <Link to={`/dashboard/apartamentos/${apt.id}`}>
-                                                <Button variant="outlined" size="small" startIcon={<Lightbulb />}>Detalles</Button>
-                                            </Link>
-                                        </>}
-                                    </TableCell>
+                <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                    <TableContainer
+                        component={Paper}
+                        elevation={0}
+                        sx={{
+                            borderRadius: 2,
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                            overflow: "hidden"
+                        }}
+                    >
+                        <Table sx={{ minWidth: 650 }} aria-label="Apartamentos">
+                            <TableHead sx={{ backgroundColor: "#f9fafb" }}>
+                                <TableRow>
+                                    {["ID", "Código", "Torre", "Balance", "Acciones"].map((head) => (
+                                        <TableCell
+                                            key={head}
+                                            align="center"
+                                            sx={{
+                                                fontWeight: 600,
+                                                fontSize: "0.9rem",
+                                                color: "#374151",
+                                                borderBottom: "1px solid #e5e7eb"
+                                            }}
+                                        >
+                                            {head}
+                                        </TableCell>
+                                    ))}
                                 </TableRow>
-                            )})}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            </TableHead>
+                            <TableBody sx={{ overflowX: "auto" }}>
+                                {apartments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(apt => (
+                                    <TableRow
+                                        key={apt.id}
+                                        hover
+                                        sx={{
+                                            "&:last-child td, &:last-child th": { border: 0 },
+                                            transition: "background-color 0.2s ease",
+                                            "&:hover": { backgroundColor: "#f3f4f6" }
+                                        }}
+                                    >
+                                        <TableCell align="center">{apt.id}</TableCell>
+                                        <TableCell align="center">{apt.code}</TableCell>
+                                        <TableCell align="center">{apt.tower}</TableCell>
+                                        <TableCell align="center"
+                                            sx={{
+                                                color: apt.balance < 0 ? "error.main" : "success.main",
+                                                fontWeight: 500
+                                            }}
+                                        >${apt.balance.toFixed(2)}</TableCell>
+                                        <TableCell align="center">
+                                            {isAdmin ?(
+                                                <ButtonGroup variant="text" aria-label="Botones de Acción">
+                                                    <Link to={`/admin/dashboard/apartamentos/${apt.id}`}>
+                                                        <Button size="small" startIcon={<Lightbulb />}>Detalles</Button>
+                                                    </Link>
+                                                    <Button
+                                                        onClick={() => handleDeleteClick(apt.id)}
+                                                        startIcon={<Delete />}
+                                                        color="error"
+                                                        size="small"
+                                                    >
+                                                        Eliminar
+                                                    </Button>
+                                                </ButtonGroup>
+                                            ) : (
+                                                <Link to={`/dashboard/apartamentos/${apt.id}`}>
+                                                    <Button variant="outlined" size="small" startIcon={<Lightbulb />}>
+                                                        Detalles
+                                                    </Button>
+                                                </Link>
+                                            )}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        component="div"
+                        count={apartments.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        labelRowsPerPage="Filas por página"
+                        labelDisplayedRows={({ from, to, count }) =>
+                            `${from}–${to} de ${count !== -1 ? count : `más de ${to}`}`
+                        }
+                    />
+                </Paper>
             : <>No hay Apartamentos</>}
         </>
     );

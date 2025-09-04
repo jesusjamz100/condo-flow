@@ -1,4 +1,5 @@
-import { Box, Card, CardContent, Typography } from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
+import { Home, People, Payment, AccountBalance } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { getAllApartments } from "../apartments/api";
@@ -37,69 +38,98 @@ const AdminSummary = () => {
     return (
         <>
             <Box sx={{
-                display: "flex",
-                gap: 4
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "repeat(4, 1fr)" },
+                gap: 3,
+                mb: 1
             }}>
-                <Card sx={{width: "100%"}}>
-                    <CardContent>
-                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
+                <Card sx={{ flex: 1, p: 2, display: "flex", alignItems: "center", gap: 2, boxShadow: 3, borderRadius: 3 }}>
+                    <Home color="primary" sx={{ fontSize: 40 }} />
+                    <div>
+                        <Typography variant="body2" color="text.secondary">
                             Apartamentos Totales
                         </Typography>
-                        <Typography variant="h5" component="div">
-                            { apartments.length }
-                        </Typography>
-                    </CardContent>
+                        <Typography variant="h5">{apartments.length}</Typography>
+                    </div>
                 </Card>
-                <Card sx={{width: "100%"}}>
-                    <CardContent>
-                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
+                <Card sx={{flex: 1, p: 2, display: "flex", alignItems: "center", gap: 2, boxShadow: 3, borderRadius: 3}}>
+                    <People color="primary" sx={{ fontSize: 40 }} />
+                    <div>
+                        <Typography variant="body2" color="text.secondary">
                             Residentes Totales
                         </Typography>
                         <Typography variant="h5" component="div">
                             { residents.length }
                         </Typography>
-                    </CardContent>
+                    </div>
                 </Card>
-                <Card sx={{width: "100%"}}>
-                    <CardContent>
-                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
+                <Card sx={{flex: 1, p: 2, display: "flex", alignItems: "center", gap: 2, boxShadow: 3, borderRadius: 3}}>
+                    <Payment color="primary" sx={{ fontSize: 40 }} />
+                    <div>
+                        <Typography variant="body2" color="text.secondary">
                             Pagos sin aprobar
                         </Typography>
                         <Typography variant="h5" component="div">
                             { payments.length }
                         </Typography>
-                    </CardContent>
+                    </div>
                 </Card>
-                <Card sx={{width: "100%"}}>
-                    <CardContent>
-                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
-                            Balance Total de Apartamentos
+                <Card sx={{flex: 1, p: 2, display: "flex", alignItems: "center", gap: 2, boxShadow: 3, borderRadius: 3}}>
+                    <AccountBalance color="primary" sx={{ fontSize: 40 }} />
+                    <div>
+                        <Typography variant="body2" color="text.secondary">
+                            Balance Total
                         </Typography>
                         <Typography variant="h5" component="div" color={balance < 0 ? "error" : "success"}>
-                            ${ balance }
+                            ${ balance.toFixed(2) }
                         </Typography>
-                    </CardContent>
+                    </div>
                 </Card>
             </Box>
-            <Box sx={{
-                display: "flex",
-                gap: 4
-            }}>
-                <Card sx={{width: "100%"}}>
-                    <CardContent>
-                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
-                            Evolución de gastos { dayjs().year() }
-                        </Typography>
-                        <MonthlyExpensesChart />
-                    </CardContent>
+            <Box
+                sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "2fr 1fr" },
+                    gap: 4,
+                    mt: 1
+                }}
+            >
+                <Card
+                    sx={{
+                        p: 3,
+                        boxShadow: 3,
+                        borderRadius: 3,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1
+                    }}
+                >
+                    <Typography variant="h6" sx={{ fontWeight: "bold", color: "text.primary" }}>
+                        Evolución de gastos {dayjs().year()}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Seguimiento mensual de los gastos del condominio
+                    </Typography>
+                    <MonthlyExpensesChart />
                 </Card>
-                <Card sx={{ width: "50%" }}>
-                    <CardContent>
-                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
-                            Apartamentos morosos vs Apartamentos al día
-                        </Typography>
-                        <ApartmentsBalancePie />
-                    </CardContent>
+
+                <Card
+                    sx={{
+                        p: 3,
+                        boxShadow: 3,
+                        borderRadius: 3,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1
+                    }}
+                >
+                    <Typography variant="h6" sx={{ fontWeight: "bold", color: "text.primary" }}>
+                        Apartamentos morosos vs al día
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Distribución actual de pagos
+                    </Typography>
+                    <ApartmentsBalancePie />
                 </Card>
             </Box>
         </>
