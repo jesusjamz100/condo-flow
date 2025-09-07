@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import { Alert, Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import { PAYMENT_TYPES } from "../../../utils/constants";
 import type { ApartmentResponse, PaymentRequest } from "../../../types/api";
 import { registerPayment } from "../api";
@@ -17,6 +17,7 @@ const PaymentForm = () => {
     const [reference, setReference] = useState<string | null>(null);
     const [description, setDescription] = useState<string>("");
     const [apartmentId, setApartmentId] = useState<string | number>('');
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -74,14 +75,19 @@ const PaymentForm = () => {
         }      
 
         try {
+            setLoading(true)
             await registerPayment(payment);
-            navigate("/dashboard/pagos", { replace: true });
+            setAlert({ msg: "Pago registrado con éxito", error: false });
+            setTimeout(() => {
+                navigate("/dashboard/pagos", { replace: true });
+            }, 2000);
         } catch (error) {
+            setAlert({msg: "Hubo un problema con la petición", error: true})
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     }
-
-    const msg = alert?.msg;
 
     if (alert) {
         setTimeout(() => {
@@ -91,7 +97,14 @@ const PaymentForm = () => {
 
     return (
         <>
-            {msg && <Alert severity="error">{msg}</Alert>}
+            {alert && (
+                <Alert
+                    severity={alert.error ? "error" : "success"}
+                    sx={{ mb: 2, width: "100%" }}
+                >
+                    {alert.msg}
+                </Alert>
+            )}
             <Box sx={{display: 'flex', gap: 4}}>
                 <FormControl fullWidth>
                     <InputLabel id="select-apartment-label">Apartamento</InputLabel>
@@ -151,7 +164,13 @@ const PaymentForm = () => {
                 </FormControl>
             </Box>
             <Box sx={{display: "flex"}}>
-                <Button variant="contained" color="primary" onClick={handleSubmit}>Registrar</Button>
+                <Button variant="contained" color="primary" onClick={handleSubmit} disabled={loading}>
+                    {loading ? (
+                        <CircularProgress size={20} color="inherit" />
+                    ) : (
+                        "Registrar pago"
+                    )}
+                </Button>
             </Box>
         </>
     );

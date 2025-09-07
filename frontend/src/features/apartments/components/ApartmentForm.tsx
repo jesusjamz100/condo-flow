@@ -81,6 +81,7 @@ const ApartmentForm = () => {
             }, 2000);
         } catch (error) {
             setAlert({msg: "Hubo un error con la operación", error: true});
+            console.log(error);
         } finally {
             setLoading(false);
         }

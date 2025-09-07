@@ -206,7 +206,7 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
                                                 </ButtonGroup>
                                             ) : (
                                                 <Link to={`/dashboard/apartamentos/${apt.id}`}>
-                                                    <Button variant="outlined" size="small" startIcon={<Lightbulb />}>
+                                                    <Button size="small" startIcon={<Lightbulb />}>
                                                         Detalles
                                                     </Button>
                                                 </Link>

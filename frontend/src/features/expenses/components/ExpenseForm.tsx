@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, Box, Button, FormControl, FormHelperText, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, FormControl, FormHelperText, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { SCOPE_TYPES, TOWERS } from "../../../utils/constants";
 import { useNavigate } from "react-router";
 import { createExpense } from "../api";
@@ -19,6 +19,7 @@ const ExpenseForm = () => {
     const [applicableTowers, setApplicableTowers] = useState<Set<string>>(new Set([]));
     const [selectedSector, setSelectedSector] = useState("");
     const [selectedTower, setSelectedTower] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -63,27 +64,37 @@ const ExpenseForm = () => {
         };
 
         try {
+            setLoading(true);
             await createExpense(expense);
-            navigate("/admin/dashboard/gastos", { replace: true });
+            setAlert({ msg: "Gasto registrado con éxito", error: false });
+            setTimeout(() => {
+                navigate("/admin/dashboard/gastos", { replace: true });
+            }, 2000);
         } catch (error) {
             setAlert({msg: "Hubo un problema con la petición", error: true})
             console.log(error);
-            
+        } finally {
+            setLoading(false);
         }
     }
 
-    const msg = alert?.msg;
-
     if (alert) {
         setTimeout(() => {
-            setAlert(null);
+            setAlert(null)
         }, 3000);
     }
 
     return (
         <>
             <Box sx={{ maxWidth: 500 }}>
-                {msg && <Alert severity="error">{msg}</Alert>}
+                {alert && (
+                    <Alert
+                        severity={alert.error ? "error" : "success"}
+                        sx={{ mb: 2, width: "100%" }}
+                    >
+                        {alert.msg}
+                    </Alert>
+                )}
                 <TextField
                     label="Descripción"
                     fullWidth
@@ -106,7 +117,7 @@ const ExpenseForm = () => {
                     <Select
                         value={scopeType}
                         onChange={(e) => {
-                            setScopeType(e.target.value as any);
+                            setScopeType(e.target.value);
                             setApplicableTowers(new Set([]));
                             setSelectedSector("");
                             setSelectedTower("");
@@ -154,13 +165,18 @@ const ExpenseForm = () => {
                 )}
 
                 <Button
+                    disabled={loading}
                     variant="contained"
                     color="primary"
                     fullWidth
                     sx={{ mt: 2 }}
                     onClick={handleSubmit}
                 >
-                    Guardar gasto
+                    {loading ? (
+                        <CircularProgress size={20} color="inherit" />
+                    ) : (
+                        "Guardar gasto"
+                    )}
                 </Button>
             </Box>
         </>

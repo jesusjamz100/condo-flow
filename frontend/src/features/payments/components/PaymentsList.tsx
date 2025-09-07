@@ -228,14 +228,14 @@ const PaymentsList = ({isAdmin}: PaymentsListProps) => {
                                                                     Detalles
                                                                 </Button>
                                                             </Link>
-                                                            <Button onClick={() => handleApproveClick(payment.id)} startIcon={<Done />} size="small">
+                                                            <Button color="success" onClick={() => handleApproveClick(payment.id)} startIcon={<Done />} size="small">
                                                                 Aprobar
                                                             </Button> 
                                                         </ButtonGroup>
                                                     }
                                                 </> : <>
                                                     <Link to={`/dashboard/pagos/${payment.id}`}>
-                                                        <Button variant="outlined" size="small" startIcon={<Lightbulb />}>Detalles</Button>
+                                                        <Button size="small" startIcon={<Lightbulb />}>Detalles</Button>
                                                     </Link>
                                                 </>}
                                         </TableCell>
