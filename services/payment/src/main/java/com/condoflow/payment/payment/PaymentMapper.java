@@ -13,6 +13,7 @@ public class PaymentMapper {
                 payment.getAmount(),
                 payment.getDescription(),
                 payment.getType(),
+                payment.getReference(),
                 payment.getApartmentId(),
                 payment.getResidentId(),
                 payment.isApproved(),
@@ -25,8 +26,8 @@ public class PaymentMapper {
                 .amount(request.amount())
                 .description(request.description())
                 .type(request.type())
+                .reference(request.reference())
                 .apartmentId(request.apartmentId())
-                .residentId(request.residentId())
                 .build();
     }
 }

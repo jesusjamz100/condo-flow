@@ -20,7 +20,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PageResponse<PaymentResponse> findMyPaymentsByApartment(Integer apartmentId, int page, int size, PaymentType type) {
         ResidentResponse resident = residentClient.getMe()
                 .orElseThrow(() -> new RuntimeException("Resident Not Found"));
-        ApartmentResponse apartment = apartmentClient.findApartmentById(apartmentId)
+        ApartmentResponse apartment = apartmentClient.findMyApartmentById(apartmentId)
                 .orElseThrow(() -> new RuntimeException("Apartment Not Found"));
         boolean hasRelation = resident.apartmentResidents().stream()
                 .anyMatch(ar ->
@@ -126,15 +128,20 @@ public class PaymentServiceImpl implements PaymentService {
             throw new RuntimeException("Wire payments should include a reference");
         }
         Payment payment = mapper.toPayment(request);
+        payment.setResidentId(resident.id());
         repository.save(payment);
     }
 
     @Override
-    public PageResponse<PaymentResponse> findAllPayments(int page, int size, PaymentType type) {
+    public PageResponse<PaymentResponse> findAllPayments(int page, int size, PaymentType type, Boolean approved, LocalDate startDate, LocalDate endDate) {
 
         Specification<Payment> spec = Specification
                 .allOf(
-                        type != null ? byPaymentType(type) : null
+                        type != null ? byPaymentType(type) : null,
+                        (byApproved(approved)),
+                        (startDate != null && endDate != null) ? byCreatedBetween(startDate, endDate) : null,
+                        (startDate != null && endDate == null) ? byCreatedAfter(startDate) : null,
+                        (startDate == null && endDate != null) ? byCreatedBefore(endDate) : null
                 );
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
@@ -171,6 +178,36 @@ public class PaymentServiceImpl implements PaymentService {
         repository.save(payment);
     }
 
+    @Override
+    public Optional<PaymentResponse> findLastPaymentByApartmentId(Integer apartmentId) {
+        List<Payment> payments = repository.findByApartmentIdOrderByCreatedDateDesc(apartmentId);
+        if (payments.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(mapper.toPaymentResponse(payments.getFirst()));
+    }
+
+    @Override
+    public PageResponse<PaymentResponse> findAllPaymentsByApartmentId(Integer apartmentId, int page, int size) {
+        ApartmentResponse apartment = apartmentClient.findApartmentById(apartmentId)
+                .orElseThrow(() -> new RuntimeException("Apartment Not Found"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Page<Payment> payments = repository.findByApartmentId(apartmentId, pageable);
+        List<PaymentResponse> paymentResponse = payments
+                .stream()
+                .map(mapper::toPaymentResponse)
+                .toList();
+        return new PageResponse<>(
+                paymentResponse,
+                payments.getNumber(),
+                payments.getSize(),
+                payments.getTotalElements(),
+                payments.getTotalPages(),
+                payments.isFirst(),
+                payments.isLast()
+        );
+    }
+
     Specification<Payment> byApartmentId(Integer apartmentId) {
         return (root, query, cb) -> cb.equal(root.get("apartmentId"), apartmentId);
     }
@@ -181,5 +218,30 @@ public class PaymentServiceImpl implements PaymentService {
 
     Specification<Payment> byPaymentType(PaymentType type) {
         return (root, query, cb) -> cb.equal(root.get("type"), type);
+    }
+
+    Specification<Payment> byApproved(Boolean approved) {
+        return (root, query, cb) -> {
+            if (approved == null) {
+                return cb.conjunction(); // no aplica filtro
+            }
+            return cb.equal(root.get("approved"), approved);
+        };
+    }
+
+    public static Specification<Payment> byCreatedBetween(LocalDate startDate, LocalDate endDate) {
+        return (root, query, cb) -> cb.between(
+                root.get("createdDate"),
+                startDate.atStartOfDay(),
+                endDate.plusDays(1).atStartOfDay()
+        );
+    }
+
+    public static Specification<Payment> byCreatedAfter(LocalDate startDate) {
+        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get("createdDate"), startDate.atStartOfDay());
+    }
+
+    public static Specification<Payment> byCreatedBefore(LocalDate end) {
+        return (root, query, cb) -> cb.lessThan(root.get("createdDate"), end.plusDays(1).atStartOfDay());
     }
 }

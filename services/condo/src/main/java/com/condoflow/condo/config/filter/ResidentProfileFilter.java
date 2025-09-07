@@ -29,7 +29,9 @@ public class ResidentProfileFilter extends OncePerRequestFilter {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth instanceof JwtAuthenticationToken jwtAuth) {
             String keycloakUserId = jwtAuth.getToken().getSubject();
-            residentService.createIfNotExists(keycloakUserId);
+            String firstName = jwtAuth.getToken().getClaim("given_name");
+            String lastName = jwtAuth.getToken().getClaim("family_name");
+            residentService.createIfNotExists(keycloakUserId, firstName, lastName);
         }
 
         filterChain.doFilter(request, response);

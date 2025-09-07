@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class BaseEntity {
     // Identification
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     // Creation and last updated dates control
     @CreatedDate

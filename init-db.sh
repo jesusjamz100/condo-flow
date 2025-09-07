@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # Se crean las bases de datos independientes
@@ -8,6 +8,12 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "postgres" <<-EOSQL
 
   CREATE DATABASE paymentdb;
   GRANT ALL PRIVILEGES ON DATABASE paymentdb TO $POSTGRES_USER;
+
+  CREATE DATABASE expensedb;
+  GRANT ALL PRIVILEGES ON DATABASE expensedb TO $POSTGRES_USER;
+
+  CREATE DATABASE billingdb;
+  GRANT ALL PRIVILEGES ON DATABASE billingdb TO $POSTGRES_USER;
 
   CREATE DATABASE keycloak;
   GRANT ALL PRIVILEGES ON DATABASE keycloak TO $POSTGRES_USER;

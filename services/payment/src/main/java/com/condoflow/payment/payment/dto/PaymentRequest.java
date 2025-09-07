@@ -20,9 +20,6 @@ public record PaymentRequest(
         String description,
         @NotNull
         @Positive
-        Integer apartmentId,
-        @NotNull
-        @Positive
-        Integer residentId
+        Integer apartmentId
 ) {
 }

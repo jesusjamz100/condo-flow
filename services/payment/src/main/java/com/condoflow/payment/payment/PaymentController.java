@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/payments")
@@ -56,9 +59,12 @@ public class PaymentController {
     public ResponseEntity<PageResponse<PaymentResponse>> getAllPayments(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
-            @RequestParam(name = "type", required = false) PaymentType type
+            @RequestParam(name = "type", required = false) PaymentType type,
+            @RequestParam(name = "approved", required = false) Boolean approved,
+            @RequestParam(name = "startDate", required = false) LocalDate startDate,
+            @RequestParam(name = "endDate", required = false) LocalDate endDate
     ) {
-        return ResponseEntity.ok(service.findAllPayments(page, size, type));
+        return ResponseEntity.ok(service.findAllPayments(page, size, type, approved, startDate, endDate));
     }
 
     @GetMapping("/admin/{paymentId}")
@@ -74,6 +80,22 @@ public class PaymentController {
     ) {
         service.approvePayment(paymentId);
         return ResponseEntity.accepted().build();
+    }
+
+    @GetMapping("/admin/apartments/byId/{apartmentId}")
+    public ResponseEntity<PageResponse<PaymentResponse>> getPaymentsByApartmentId(
+            @PathVariable(name = "apartmentId") Integer apartmentId,
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+    ) {
+        return ResponseEntity.ok(service.findAllPaymentsByApartmentId(apartmentId, page, size));
+    }
+
+    @GetMapping("/admin/apartments/{apartmentId}")
+    public ResponseEntity<Optional<PaymentResponse>> getLastPaymentByApartmentId(
+            @PathVariable(name = "apartmentId") Integer apartmentId
+    ) {
+        return ResponseEntity.ok(service.findLastPaymentByApartmentId(apartmentId));
     }
 
 }

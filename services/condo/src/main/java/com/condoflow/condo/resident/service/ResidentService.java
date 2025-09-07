@@ -8,7 +8,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 public interface ResidentService {
     ResidentProfileResponse getMe(Jwt jwt);
-    void createIfNotExists(String keycloakId);
+    void createIfNotExists(String keycloakId, String firstName, String lastName);
     ResidentResponse updateResident(ResidentRequest request);
     PageResponse<ResidentResponse> findAllUsers(int page, int size);
     ResidentResponse findResidentById(Integer residentId);

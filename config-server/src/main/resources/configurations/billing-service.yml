@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/condoflow
+          jwk-set-uri: http://keycloak:8080/realms/condoflow/protocol/openid-connect/certs
+
+application:
+  config:
+    expense-url: http://gateway-service:8222/expenses
+    apartment-url: http://gateway-service:8222/apartments
+    payment-url: http://gateway-service:8222/payments
+
+server:
+  port: 8088

@@ -3,6 +3,7 @@ package com.condoflow.condo.apartment.service;
 import com.condoflow.condo.apartment.Apartment;
 import com.condoflow.condo.apartment.ApartmentMapper;
 import com.condoflow.condo.apartment.ApartmentRepository;
+import com.condoflow.condo.apartment.Tower;
 import com.condoflow.condo.apartment.dto.ApartmentRequest;
 import com.condoflow.condo.apartment.dto.ApartmentResponse;
 import com.condoflow.condo.common.PageResponse;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,9 +75,45 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public PageResponse<ApartmentResponse> findAllApartments(int page, int size) {
+    public List<ResidentResponse> findResidentsByApartmentId(Jwt jwt, int apartmentId) {
+        Resident resident = residentRepository.findByKeycloakUserId(jwt.getSubject())
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with keycloak user ID:: " + jwt.getSubject()));
+
+        boolean belongs = apartmentRepository.existsByIdAndApartmentResidentsResidentId(apartmentId, resident.getId());
+
+        if (!belongs) {
+            throw new ApartmentNotFoundException("No apartment with that resident ID");
+        }
+
+        List<Resident> residents = residentRepository.findAllByApartmentResidentsApartmentId(apartmentId);
+
+        return residents
+                .stream()
+                .map(residentMapper::toResidentResponse)
+                .toList();
+    }
+
+    @Override
+    public ResidentResponse findResidentFromMyApartments(Jwt jwt, Integer apartmentId, Integer residentId) {
+        Resident me = residentRepository.findByKeycloakUserId(jwt.getSubject())
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with keycloak user ID:: " + jwt.getSubject()));
+        boolean belongs = apartmentRepository.existsByIdAndApartmentResidentsResidentId(apartmentId, me.getId());
+        if (!belongs) {
+            throw new ApartmentNotFoundException("No apartment with that resident ID");
+        }
+        Resident resident = residentRepository.findById(residentId)
+                .orElseThrow(() -> new ResidentNotFoundException("Resident not found with ID:: " + residentId));
+        return residentMapper.toResidentResponse(resident);
+    }
+
+    @Override
+    public PageResponse<ApartmentResponse> findAllApartments(int page, int size, Tower tower) {
+        Specification<Apartment> spec = Specification
+                .allOf(
+                        tower != null ? byTower(tower) : null
+                );
         Pageable pageable = PageRequest.of(page, size, Sort.by("code").ascending());
-        Page<Apartment> apartments = apartmentRepository.findAll(pageable);
+        Page<Apartment> apartments = apartmentRepository.findAll(spec, pageable);
         List<ApartmentResponse> apartmentResponse = apartments.stream()
                 .map(apartmentMapper::toApartmentResponse)
                 .toList();
@@ -126,6 +164,16 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
+    public void updateBalanceFromInvoice(Integer apartmentId, BigDecimal amount) {
+        Apartment apartment = apartmentRepository.findById(apartmentId)
+                .orElseThrow(() -> new ApartmentNotFoundException("Apartment not found with ID:: " + apartmentId));
+        apartment.setBalance(
+                apartment.getBalance().subtract(amount).round(new MathContext(3))
+        );
+        apartmentRepository.save(apartment);
+    }
+
+    @Override
     public void deleteApartmentById(int apartmentId) {
         Apartment apartment = apartmentRepository.findById(apartmentId)
                 .orElseThrow(() -> new ApartmentNotFoundException("Apartment not found with ID:: " + apartmentId));
@@ -137,7 +185,7 @@ public class ApartmentServiceImpl implements ApartmentService {
         Apartment apartment = apartmentRepository.findById(apartmentId)
                 .orElseThrow(() -> new ApartmentNotFoundException("Apartment not found with ID:: " + apartmentId));
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Resident> residents = residentRepository.findByApartmentResidentsApartmentId(apartmentId, pageable);
+        Page<Resident> residents = residentRepository.findAllByApartmentResidentsApartmentId(apartmentId, pageable);
         List<ResidentResponse> residentResponse = residents.stream()
                 .map(residentMapper::toResidentResponse)
                 .toList();
@@ -200,6 +248,10 @@ public class ApartmentServiceImpl implements ApartmentService {
                 .orElseThrow(() -> new ApartmentNotFoundException("Apartment not found with ID:: " + apartmentId));
         apartment.getApartmentResidents()
                 .removeIf(ar -> ar.getResident().getId() == residentId);
+    }
+
+    Specification<Apartment> byTower(Tower tower) {
+        return (root, query, cb) -> cb.equal(root.get("tower"), tower);
     }
 
     private static void mergeApartment(Apartment apartment, ApartmentRequest request) {
