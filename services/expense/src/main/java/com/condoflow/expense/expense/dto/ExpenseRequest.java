@@ -19,6 +19,7 @@ public record ExpenseRequest (
         BigDecimal amount,
         @NotNull
         ScopeType scopeType,
-        Set<Tower> applicableTowers
+        @NotNull
+        Set<String> applicableTowers
 ) {
 }

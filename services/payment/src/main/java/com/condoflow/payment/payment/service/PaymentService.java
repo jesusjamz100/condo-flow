@@ -5,6 +5,7 @@ import com.condoflow.payment.payment.PaymentType;
 import com.condoflow.payment.payment.dto.PaymentRequest;
 import com.condoflow.payment.payment.dto.PaymentResponse;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface PaymentService {
@@ -16,11 +17,13 @@ public interface PaymentService {
 
     void registerPayment(PaymentRequest request);
 
-    PageResponse<PaymentResponse> findAllPayments(int page, int size, PaymentType type);
+    PageResponse<PaymentResponse> findAllPayments(int page, int size, PaymentType type, Boolean approved, LocalDate startDate, LocalDate endDate);
 
     PaymentResponse findById(Integer paymentId);
 
     void approvePayment(Integer paymentId);
 
     Optional<PaymentResponse> findLastPaymentByApartmentId(Integer apartmentId);
+
+    PageResponse<PaymentResponse> findAllPaymentsByApartmentId(Integer apartmentId, int page, int size);
 }

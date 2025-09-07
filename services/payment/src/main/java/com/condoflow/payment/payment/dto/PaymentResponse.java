@@ -10,6 +10,7 @@ public record PaymentResponse(
         BigDecimal amount,
         String description,
         PaymentType type,
+        String reference,
         Integer apartmentId,
         Integer residentId,
         boolean approved,

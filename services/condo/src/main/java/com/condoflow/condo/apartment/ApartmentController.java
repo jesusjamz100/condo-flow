@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,13 +39,31 @@ public class ApartmentController {
         return ResponseEntity.ok(service.findApartmentById(jwt, apartmentId));
     }
 
+    @GetMapping("/myApartments/{apartmentId}/residents")
+    public ResponseEntity<List<ResidentResponse>> getMyApartmentResidents(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable("apartmentId") int apartmentId
+    ) {
+        return ResponseEntity.ok(service.findResidentsByApartmentId(jwt, apartmentId));
+    }
+
+    @GetMapping("/myApartments/{apartmentId}/residents/{residentId}")
+    public ResponseEntity<ResidentResponse> getResidentFromMyApartments(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable("apartmentId") Integer apartmentId,
+            @PathVariable("residentId") Integer residentId
+    ) {
+        return ResponseEntity.ok(service.findResidentFromMyApartments(jwt, apartmentId, residentId));
+    }
+
     // ADMIN ROUTES
     @GetMapping("/admin")
     public ResponseEntity<PageResponse<ApartmentResponse>> findAllApartments(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            @RequestParam(name = "tower", required = false) Tower tower
     ) {
-        return ResponseEntity.ok(service.findAllApartments(page, size));
+        return ResponseEntity.ok(service.findAllApartments(page, size, tower));
     }
 
     @GetMapping("/admin/findApartmentById/{apartmentId}")

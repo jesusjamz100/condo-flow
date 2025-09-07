@@ -31,6 +31,7 @@ public class Payment {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentType type;
+    private String reference;
 
     private Integer apartmentId;
     private Integer residentId;

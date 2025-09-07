@@ -36,6 +36,8 @@ public class ResidentMapper {
         return new ResidentResponse(
                 resident.getId(),
                 resident.getKeycloakUserId(),
+                resident.getFirstName(),
+                resident.getLastName(),
                 resident.getDocument(),
                 resident.getPhoneNumber(),
                 resident.getEmergencyContactName(),

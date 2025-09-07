@@ -38,10 +38,12 @@ public class ResidentServiceImpl implements ResidentService {
 
     @Override
     @Transactional
-    public void createIfNotExists(String keycloakUserId) {
+    public void createIfNotExists(String keycloakUserId, String firstName, String lastName) {
         repository.findByKeycloakUserId(keycloakUserId)
                 .orElseGet(() -> {
                     Resident resident = Resident.builder()
+                            .firstName(firstName)
+                            .lastName(lastName)
                             .keycloakUserId(keycloakUserId)
                             .build();
                     return repository.save(resident);

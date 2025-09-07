@@ -18,19 +18,5 @@ spring:
           issuer-uri: http://localhost:8080/realms/condoflow
           jwk-set-uri: http://keycloak:8080/realms/condoflow/protocol/openid-connect/certs
 
-#  kafka:
-#    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
-#    producer:
-#      # serializers JSON
-#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-#      # durabilidad y fiabilidad
-#      acks: all
-#      retries: 3
-#      # evitar duplicados en reintentos
-#      enable-idempotence: true
-#      # small batches para la baja latencia
-#      linger-ms: 5
-
 server:
   port: 8082
