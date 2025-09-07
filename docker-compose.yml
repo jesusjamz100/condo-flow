@@ -96,7 +96,7 @@ services:
     networks:
       - condo-net
 
-  # 7) PostgreSQL
+  # 5) PostgreSQL
   postgres:
     image: postgres:15-alpine
     container_name: postgres
@@ -117,7 +117,7 @@ services:
     networks:
       - condo-net
 
-  # 8) Condo Service
+  # 6) Condo Service
   condo-service:
     build:
       context: ./services/condo
@@ -138,7 +138,7 @@ services:
     networks:
       - condo-net
 
-  # 9) Payment Service
+  # 7) Payment Service
   payment-service:
     build:
       context: ./services/payment
@@ -159,7 +159,7 @@ services:
     networks:
       - condo-net
 
-  # 10) Expense service
+  # 8) Expense service
   expense-service:
     build:
       context: ./services/expense
@@ -180,7 +180,7 @@ services:
     networks:
       - condo-net
 
-  # 11) Billing service
+  # 9) Billing service
   billing-service:
     build:
       context: ./services/billing
