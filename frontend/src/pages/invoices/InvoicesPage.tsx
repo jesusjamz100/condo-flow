@@ -10,7 +10,7 @@ const InvoicesPage = ({ isAdmin }: { isAdmin: boolean }) => {
         <>
             <PageTitle title="Facturas" />
             {isAdmin ? 
-                <Link to="/admin/dashboard/facturas/generar" >
+                <Link to="/admin/dashboard/facturas/generar" style={{ width: "fit-content" }}>
                     <Button variant="outlined" color="success" startIcon={<Add />} >Generar Facturas</Button>
                 </Link> : <></>}
             <InvoicesList isAdmin={isAdmin} />

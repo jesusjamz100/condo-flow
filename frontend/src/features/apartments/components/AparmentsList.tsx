@@ -147,7 +147,7 @@ const ApartmentsList = ({isAdmin}: ApartmentsListProps) => {
                         sx={{
                             borderRadius: 2,
                             boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                            overflow: "hidden"
+                            overflowX: "auto"
                         }}
                     >
                         <Table sx={{ minWidth: 650 }} aria-label="Apartamentos">

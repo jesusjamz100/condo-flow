@@ -8,4 +8,5 @@ export const authConfig: TAuthConfig = {
     logoutEndpoint: import.meta.env.VITE_LOGOUT_ENDPOINT,
     scope: "openid profile email",
     onRefreshTokenExpire: (event: TRefreshTokenExpiredEvent) => event.logIn(undefined, undefined, "popup"),
+    autoLogin: false
 }

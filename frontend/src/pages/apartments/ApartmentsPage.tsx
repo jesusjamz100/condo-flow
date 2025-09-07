@@ -10,7 +10,7 @@ const ApartmentsPage = ({ isAdmin }: { isAdmin: boolean }) => {
         <>
             <PageTitle title="Apartamentos" />
             {isAdmin ? 
-                <Link to="/admin/dashboard/apartamentos/crear" className="w-fit">
+                <Link to="/admin/dashboard/apartamentos/crear" className="w-fit" style={{ width: "fit-content" }}>
                     <Button variant="outlined" color="success" startIcon={<Add />} >Crear</Button>
                 </Link> : <></>}
             <ApartmentsList isAdmin={isAdmin} />

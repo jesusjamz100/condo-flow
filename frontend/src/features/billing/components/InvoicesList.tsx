@@ -136,7 +136,6 @@ const InvoicesList = ({ isAdmin }: { isAdmin: boolean }) => {
                 <Paper
                     sx={{
                         width: "100%",
-                        overflow: "hidden",
                         borderRadius: 2,
                         boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
                     }}
@@ -147,7 +146,7 @@ const InvoicesList = ({ isAdmin }: { isAdmin: boolean }) => {
                         sx={{
                             borderRadius: 2,
                             boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                            overflow: "hidden"
+                            overflowX: "auto"
                         }}
                     >
                         <Table sx={{ minWidth: 650 }} aria-label="Facturas">
@@ -186,13 +185,13 @@ const InvoicesList = ({ isAdmin }: { isAdmin: boolean }) => {
                                             "&:hover": { backgroundColor: "#f3f4f6" }
                                         }}
                                     >
-                                        <TableCell>{inv.id}</TableCell>
-                                        <TableCell>{ formatDate(inv.createdDate) }</TableCell>
-                                        <TableCell>${ inv.amount }</TableCell>
-                                        <TableCell>${ inv.finalAmount }</TableCell>
-                                        <TableCell>
+                                        <TableCell align="center">{inv.id}</TableCell>
+                                        <TableCell align="center">{ formatDate(inv.createdDate) }</TableCell>
+                                        <TableCell align="center">${ inv.amount }</TableCell>
+                                        <TableCell align="center">${ inv.finalAmount }</TableCell>
+                                        <TableCell align="center">
                                             <Link to={isAdmin ? `/admin/dashboard/facturas/${inv.id}` : `/dashboard/facturas/${inv.id}`}>
-                                                <Button variant="outlined" size="small" startIcon={<Lightbulb />}>Detalles</Button>
+                                                <Button variant="text" size="small" startIcon={<Lightbulb />}>Detalles</Button>
                                             </Link>
                                         </TableCell>
                                     </TableRow>

@@ -20,11 +20,13 @@ import ExpensesPage from "../pages/expenses/ExpensesPage";
 import InvoicesPage from "../pages/invoices/InvoicesPage";
 import InvoiceDetailsPage from "../pages/invoices/InvoiceDetailsPage";
 import InvoiceCreatePage from "../pages/invoices/InvoiceCreatePage";
+import HomePage from "../pages/home";
 
 export function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
+                <Route path="/" element={<HomePage />} />
                 <Route path="/auth/callback" element={<CallbackPage />} />
                 <Route element={<RequireAuth />}>
                     <Route element={<RequireResident />}>
@@ -38,7 +40,6 @@ export function AppRoutes() {
                             <Route path="/dashboard/facturas" element={<InvoicesPage isAdmin={false} />} />
                             <Route path="/dashboard/facturas/:invoiceId" element={<InvoiceDetailsPage isAdmin={false} />} />
                         </Route>
-                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
                     </Route>
                     <Route element={<RequireAdmin />}>
                         <Route path="/admin/dashboard" element={<AdminLayout />}>

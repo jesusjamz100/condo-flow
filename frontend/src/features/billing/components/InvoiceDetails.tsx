@@ -4,8 +4,11 @@ import type { ApartmentResponse, ExpenseResponse, InvoiceResponse } from "../../
 import formatDate from "../../../utils/formatDate";
 import { getInvoiceById } from "../api";
 import { getApartmentById, getOneOfMyApartments } from "../../apartments/api";
-import { getAllExpenses } from "../../expenses/api";
-import { Card, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { getAllExpenses, getAllExpensesByInvoice } from "../../expenses/api";
+import { Button, Card, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import dayjs from "dayjs";
 
 const InvoiceDetails = ({ invoiceId, isAdmin }: { invoiceId: number; isAdmin: boolean }) => {
 
@@ -32,7 +35,9 @@ const InvoiceDetails = ({ invoiceId, isAdmin }: { invoiceId: number; isAdmin: bo
                     const lastDay = new Date(year, month, 0).getDate();
                     const endDate = `${year}-${String(month).padStart(2, "0")}-${lastDay}`;
 
-                    const dataExpenses = await getAllExpenses(0, 5000, startDate, endDate, true);
+                    const dataExpenses = isAdmin
+                        ? await getAllExpenses(0, 5000, startDate, endDate, true, dataApartment.tower)
+                        : await getAllExpensesByInvoice(0, 5000, startDate, endDate, true, dataApartment.tower);
                     setExpenses(dataExpenses.content || []);
                 }
             } catch (error) {
@@ -44,12 +49,99 @@ const InvoiceDetails = ({ invoiceId, isAdmin }: { invoiceId: number; isAdmin: bo
         fetchData();
     }, [invoiceId, isAdmin])
 
+    const handleDownloadPDF = () => {
+        if (!invoice || !apartment) return;
+
+        const doc = new jsPDF();
+
+        // 🎯 Encabezado
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(20);
+        doc.text("Factura de Condominio", 14, 20);
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Emitida: ${dayjs().format("DD/MM/YYYY")}`, 14, 27);
+
+        // 📄 Datos del apartamento y factura
+        const [year, month] = invoice.period.split("-");
+        const datosFactura = [
+            ["Apartamento", apartment.code],
+            ["Alícuota", apartment.aliquot.toString()],
+            ["Periodo", `${month}/${year}`],
+            ["Subtotal", `$${invoice.amount.toFixed(2)}`],
+            ["Descuento", invoice.discountAmount ? `$${invoice.discountAmount.toFixed(2)}` : "N/A"],
+            ["Multa", invoice.penaltyAmount ? `$${invoice.penaltyAmount.toFixed(2)}` : "N/A"],
+            ["Total", `$${invoice.finalAmount.toFixed(2)}`],
+        ];
+
+        autoTable(doc, {
+            startY: 35,
+            head: [["Detalle", "Valor"]],
+            body: datosFactura,
+            theme: "grid",
+            headStyles: { fillColor: [41, 128, 185], halign: "center" },
+            bodyStyles: { halign: "center" },
+            styles: { fontSize: 10 },
+        });
+
+        const afterFacturaY = (doc as any).lastAutoTable.finalY + 10;
+
+        // 📊 Tabla de gastos
+        const tableData = expenses.map((exp) => {
+            let factor = 1;
+            if (exp.scopeType === "SECTOR") factor = 2;
+            if (exp.scopeType === "TOWER") factor = 4;
+
+            const montoApartamento = (exp.amount * apartment.aliquot * factor).toFixed(2);
+
+            return [
+            dayjs(exp.createdDate).format("DD/MM/YYYY"),
+            exp.description,
+            `$${exp.amount.toFixed(2)}`,
+            exp.scopeType === "SECTOR" ? "Sector" : exp.scopeType === "TOWER" ? "Torre" : "General",
+            `$${montoApartamento}`,
+            ];
+        });
+
+        autoTable(doc, {
+            startY: afterFacturaY,
+            head: [["Fecha", "Descripción", "Monto Total", "Tipo", "Monto a Pagar"]],
+            body: tableData,
+            theme: "striped",
+            headStyles: { fillColor: [52, 73, 94], halign: "center" },
+            bodyStyles: { halign: "center" },
+            styles: { fontSize: 9 },
+        });
+
+        const afterGastosY = (doc as any).lastAutoTable.finalY + 10;
+
+        // 🧾 Totales al final
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Total Factura: $${invoice.finalAmount.toFixed(2)}`, 14, afterGastosY);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text("Gracias por su pago puntual", 14, afterGastosY + 6);
+
+        // 💾 Guardar
+        doc.save(`Factura-${apartment.code}-${invoice.period}.pdf`);
+    };
+
     if (loading) {
         return <Loading text="Cargando Factura..." />
     }
 
     return (
         <>
+            <Button
+                variant="contained"
+                color="primary"
+                sx={{ mb: 2, width: "fit-content" }}
+                onClick={handleDownloadPDF}
+            >
+                Descargar PDF
+            </Button>
             <Card
                 sx={{
                     borderRadius: 2,
@@ -93,7 +185,7 @@ const InvoiceDetails = ({ invoiceId, isAdmin }: { invoiceId: number; isAdmin: bo
                                     color: invoice?.penaltyAmount ? "#dc2626" : "#000"
                                 }}
                             >
-                                <p style={{ fontWeight: 500 }}>{invoice?.penaltyAmount ? `$${invoice?.penaltyAmount}` : "N/A" }</p>
+                                {invoice?.penaltyAmount ? `$${invoice?.penaltyAmount}` : "N/A" }
                             </p>
                         </div>
                         <div>

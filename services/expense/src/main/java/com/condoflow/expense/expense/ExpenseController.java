@@ -20,15 +20,28 @@ public class ExpenseController {
 
     private final ExpenseService service;
 
+    @GetMapping("/")
+    public ResponseEntity<PageResponse<ExpenseResponse>> getAllExpensesForInvoice(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            @RequestParam(name = "billed", required = false) Boolean billed,
+            @RequestParam(name = "tower", required = false) Tower tower,
+            @RequestParam(name = "startDate", required = false) LocalDate startDate,
+            @RequestParam(name = "endDate", required = false) LocalDate endDate
+    ) {
+        return ResponseEntity.ok(service.findExpensesByInvoice(page, size, billed, startDate, endDate, tower));
+    }
+
     @GetMapping("/admin")
     public ResponseEntity<PageResponse<ExpenseResponse>> getAllExpenses(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             @RequestParam(name = "billed", required = false) Boolean billed,
+            @RequestParam(name = "tower", required = false) Tower tower,
             @RequestParam(name = "startDate", required = false) LocalDate startDate,
             @RequestParam(name = "endDate", required = false) LocalDate endDate
             ) {
-        return ResponseEntity.ok(service.findAllExpenses(page, size, billed, startDate, endDate));
+        return ResponseEntity.ok(service.findAllExpenses(page, size, billed, startDate, endDate, tower));
     }
 
     @GetMapping("/admin/{expenseId}")

@@ -8,7 +8,7 @@ const ExpensesPage = () => {
     return (
         <>
             <PageTitle title="Gastos" />
-            <Link to="/admin/dashboard/gastos/crear" >
+            <Link to="/admin/dashboard/gastos/crear" style={{ width: "fit-content" }}>
                 <Button variant="outlined" color="success" startIcon={<Add />} >Crear</Button>
             </Link>
             <ExpensesList />

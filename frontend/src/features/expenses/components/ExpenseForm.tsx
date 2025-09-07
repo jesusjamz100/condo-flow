@@ -154,7 +154,7 @@ const ExpenseForm = () => {
                 )}
 
                 <Button
-                    variant="outlined"
+                    variant="contained"
                     color="primary"
                     fullWidth
                     sx={{ mt: 2 }}

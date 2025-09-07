@@ -151,7 +151,7 @@ const PaymentForm = () => {
                 </FormControl>
             </Box>
             <Box sx={{display: "flex"}}>
-                <Button variant="outlined" color="primary" onClick={handleSubmit}>Registrar</Button>
+                <Button variant="contained" color="primary" onClick={handleSubmit}>Registrar</Button>
             </Box>
         </>
     );

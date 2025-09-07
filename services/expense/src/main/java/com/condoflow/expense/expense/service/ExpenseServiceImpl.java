@@ -6,6 +6,8 @@ import com.condoflow.expense.exception.ExpenseNotFoundException;
 import com.condoflow.expense.expense.*;
 import com.condoflow.expense.expense.dto.ExpenseRequest;
 import com.condoflow.expense.expense.dto.ExpenseResponse;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
@@ -31,12 +33,17 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseMapper mapper;
 
     @Override
-    public PageResponse<ExpenseResponse> findAllExpenses(
-            int page, int size,
-            Boolean billed, LocalDate startDate, LocalDate endDate
+    public PageResponse<ExpenseResponse> findExpensesByInvoice(
+            int page,
+            int size,
+            Boolean billed,
+            LocalDate startDate,
+            LocalDate endDate,
+            Tower tower
     ) {
 
         Specification<Expense> spec = Specification.allOf(
+                (tower != null ? byTowerOrGeneral(tower) : null),
                 (billed != null ? byBilled(billed) : null),
                 (startDate != null && endDate != null) ? byCreatedBetween(startDate, endDate) : null,
                 (startDate != null && endDate == null) ? byCreatedAfter(startDate) : null,
@@ -45,12 +52,44 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Expense> expenses = repository.findAll(spec, pageable);
-        List<ExpenseResponse> pageResponse = expenses
+        List<ExpenseResponse> expenseResponse = expenses
+                .stream()
+                .map(mapper::toExpenseResponse)
+                .toList();
+
+        return new PageResponse<>(
+                expenseResponse,
+                expenses.getNumber(),
+                expenses.getSize(),
+                expenses.getTotalElements(),
+                expenses.getTotalPages(),
+                expenses.isFirst(),
+                expenses.isLast()
+        );
+    }
+
+    @Override
+    public PageResponse<ExpenseResponse> findAllExpenses(
+            int page, int size,
+            Boolean billed, LocalDate startDate, LocalDate endDate, Tower tower
+    ) {
+
+        Specification<Expense> spec = Specification.allOf(
+                (tower != null ? byTowerOrGeneral(tower) : null),
+                (billed != null ? byBilled(billed) : null),
+                (startDate != null && endDate != null) ? byCreatedBetween(startDate, endDate) : null,
+                (startDate != null && endDate == null) ? byCreatedAfter(startDate) : null,
+                (startDate == null && endDate != null) ? byCreatedBefore(endDate) : null
+        );
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Page<Expense> expenses = repository.findAll(spec, pageable);
+        List<ExpenseResponse> expenseResponse = expenses
                 .stream()
                 .map(mapper::toExpenseResponse)
                 .toList();
         return new PageResponse<>(
-                pageResponse,
+                expenseResponse,
                 expenses.getNumber(),
                 expenses.getSize(),
                 expenses.getTotalElements(),
@@ -164,6 +203,19 @@ public class ExpenseServiceImpl implements ExpenseService {
                 expense.setAmount(request.amount());
             }
         }
+    }
+
+    public static Specification<Expense> byTowerOrGeneral(Tower tower) {
+        return (root, query, cb) -> {
+            query.distinct(true);
+
+            Join<Expense, Tower> towersJoin = root.joinSet("applicableTowers", JoinType.LEFT);
+
+            return cb.or(
+                    cb.equal(towersJoin, tower),
+                    cb.isEmpty(root.get("applicableTowers"))
+            );
+        };
     }
 
     public static Specification<Expense> byBilled(Boolean billed) {
